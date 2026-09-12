@@ -1,0 +1,43 @@
+ILANG
+[TYPE:config][PROJECT:vps-deals][LANG:zh]
+
+::STATE{@SITE, brand:vps-deals, niche:VPS hosting deals, domain:vps-deals.pages.dev, locale:en-US, currency:USD, tagline:Independent VPS price radar — real prices from public sources updated every 6 hours.}
+
+::MODULE{PROVIDERS|title:抓哪几家 这里改了站就变}
+  IONOS | https://www.ionos.com | https://www.ionos.com/servers/vps |  | jsonld
+  Hostinger | https://www.hostinger.com | https://www.hostinger.com/vps-hosting |  | jsonld
+  OVHcloud | https://www.ovhcloud.com | https://www.ovhcloud.com/en/vps/ |  | regex
+  DigitalOcean | https://www.digitalocean.com | https://www.digitalocean.com/pricing |  | regex
+  Hostwinds | https://www.hostwinds.com | https://www.hostwinds.com/vps/ |  | regex
+  ScalaHosting | https://www.scalahosting.com | https://www.scalahosting.com/ |  | regex
+  GreenGeeks | https://www.greengeeks.com | https://www.greengeeks.com/vps-hosting |  | jsonld
+  DreamHost | https://www.dreamhost.com | https://www.dreamhost.com/hosting/vps/ |  | regex
+  InMotion Hosting | https://www.inmotionhosting.com | https://www.inmotionhosting.com/vps-hosting |  | jsonld
+  UltaHost | https://ultahost.com | https://ultahost.com/vps-hosting |  | jsonld
+  Cloudzy | https://cloudzy.com | https://cloudzy.com/vps-hosting/ |  | regex
+  SSD Nodes | https://www.ssdnodes.com | https://www.ssdnodes.com/pricing/ |  | jsonld
+  BuyVM | https://buyvm.net | https://buyvm.net/kvm-dedicated-server-slices/ |  | regex
+  TransIP | https://www.transip.eu | https://www.transip.eu/vps/ |  | regex
+  Verpex | https://verpex.com | https://verpex.com/vps-hosting |  | jsonld
+  [RULE] 第4列是联盟链接 留空则用裸链 上线联盟审核通过后填这里 不用改代码
+  [RULE] 第5列是抓取档位 可选 auto jsonld regex 留空等于 auto 这是可选字段
+  [RULE] 这 15 家是 2026-09-12 实测能出数的 加新家前先本地跑一次看有没有出数
+  [RULE] 已知抓不到的不要加进来 Linode Vultr Contabo InterServer RackNerd Kamatera LiquidWeb Time4VPS 返回 403
+  [RULE] 已知 JS 渲染抓不到价格的不要加进来 Hetzner A2 Hosting HostHatch
+
+::MODULE{FIELDS|title:每条优惠提取什么}
+  title price currency offer_url valid_until source_url fetched_at
+
+::MODULE{PAGE|title:页面渲染规则}
+  per_page: 24
+  sort: price_asc
+  deal_slug_prefix: deal
+  provider_slug_prefix: provider
+
+::MODULE{SCHEDULE|title:更新频率}
+  cron: 0 */6 * * *
+
+::RULE{抓不到 price⇒这条不写 price 字段 也不写进结构化数据 不许拿估的填}
+::RULE{valid_until 已过⇒标记过期或下架 不许留着冒充有效}
+::RULE{每条 offer 必须带 source_url 指向真实被抓的公开页面 数字可溯源}
+::BOUNDARY{never:编优惠 编价格 编佣金|scope:permanent}

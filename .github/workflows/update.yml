@@ -1,0 +1,48 @@
+name: update-offers
+
+# 优惠站卖的就是及时度：谁先把新价格挂上去谁赢。
+# 公开仓库的 Actions 分钟数不限，所以排 6 小时一次，每次都留一条 commit 记录。
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-offers
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 抓取：只读公开页面，遵守 robots.txt。没有第三方依赖，不用装任何包。
+      - name: Scrape public pricing pages
+        run: python scraper.py
+
+      # 渲染：纯确定性，零推理，零 API 密钥。
+      - name: Build static site
+        run: python build.py
+
+      # 每次 commit 就是这个仓库自己的更新记录与年份。
+      - name: Commit refreshed data and site
+        run: |
+          git config user.name  "promo-radar-bot"
+          git config user.email "promo-radar-bot@users.noreply.github.com"
+          git add -A data site
+          if git diff --cached --quiet; then
+            echo "本次没有变化，跳过提交。"
+          else
+            git commit -m "chore(data): refresh offers $(date -u +'%Y-%m-%dT%H:%MZ')"
+            git push
+          fi
