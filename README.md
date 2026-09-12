@@ -61,7 +61,20 @@ selects the extraction profile (`auto`, `jsonld`, `regex`).
 ### Deploying
 
 The workflow commits the freshly built `site/` directory, so any static host can serve it.
-On Cloudflare Pages the build command is `python build.py` and the output directory is `site`.
+
+On Cloudflare Pages there are two routes:
+
+- **Git integration** — build command `python build.py`, output directory `site`.
+- **Direct upload** — no Git app authorisation needed, an API token with
+  *Cloudflare Pages: Edit* is enough:
+
+  ```bash
+  CLOUDFLARE_API_TOKEN=xxx ./deploy.sh            # deploys to vps-deals.pages.dev
+  CLOUDFLARE_API_TOKEN=xxx ./deploy.sh my-project # or a custom project name
+  ```
+
+`build.py` also emits `site/404.html` and `site/_headers` (security and cache headers),
+both of which Cloudflare Pages picks up automatically.
 
 ## Rules this project holds itself to
 

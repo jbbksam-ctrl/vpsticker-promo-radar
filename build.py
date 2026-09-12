@@ -290,6 +290,8 @@ class Builder:
         self.build_sources()
         self.build_sitemap()
         self.build_robots()
+        self.build_404()
+        self.build_headers()
         self.copy_assets()
 
     def assign_slugs(self) -> None:
@@ -764,6 +766,49 @@ class Builder:
         (SITE_DIR / "robots.txt").write_text(
             "User-agent: *\nAllow: /\n\n"
             f"Sitemap: {self.url_for('sitemap.xml')}\n",
+            encoding="utf-8",
+        )
+
+    def build_404(self) -> None:
+        """404 页直接写盘，不进 sitemap。"""
+        picks = sorted(
+            [o for o in self.active_offers() if o.get("price_monthly") is not None],
+            key=lambda o: o["price_monthly"],
+        )[:6]
+        cards = "".join(self.card(o) for o in picks)
+        content = (
+            '<section class="hero"><h1>Page not found</h1>'
+            '<p class="lede">That URL is not on this site. It may have been a deal that was '
+            "withdrawn, or a typo. Here is what is live right now.</p>"
+            '<p><a class="btn" href="/">All deals</a> '
+            '<a class="btn" href="/compare.html">Compare</a></p></section>'
+            f'<div class="cards">{cards}</div>'
+        )
+        page = self.shell(
+            path="404.html",
+            title=f"Page not found | {self.cfg.brand}",
+            description="That page is not on this site. Browse the live VPS deals instead.",
+            content=content,
+            jsonld=jsonld_script(
+                self.ld_breadcrumb([(self.cfg.brand, self.base), ("404", self.url_for("404.html"))])
+            ),
+        )
+        (SITE_DIR / "404.html").write_text(page, encoding="utf-8")
+
+    def build_headers(self) -> None:
+        """Cloudflare Pages 响应头。被别的托管忽略也无害。"""
+        (SITE_DIR / "_headers").write_text(
+            "/*\n"
+            "  X-Content-Type-Options: nosniff\n"
+            "  Referrer-Policy: strict-origin-when-cross-origin\n"
+            "  X-Frame-Options: SAMEORIGIN\n"
+            "  Permissions-Policy: geolocation=(), microphone=(), camera=()\n"
+            "\n"
+            "/assets/*\n"
+            "  Cache-Control: public, max-age=604800, immutable\n"
+            "\n"
+            "/*.html\n"
+            "  Cache-Control: public, max-age=300\n",
             encoding="utf-8",
         )
 
