@@ -69,9 +69,13 @@ On Cloudflare Pages there are two routes:
   *Cloudflare Pages: Edit* is enough:
 
   ```bash
-  CLOUDFLARE_API_TOKEN=xxx ./deploy.sh            # deploys to vps-deals.pages.dev
-  CLOUDFLARE_API_TOKEN=xxx ./deploy.sh my-project # or a custom project name
+  CLOUDFLARE_API_TOKEN=xxx CLOUDFLARE_ACCOUNT_ID=yyy ./deploy.sh
   ```
+
+  `CLOUDFLARE_ACCOUNT_ID` is required, not optional: a token scoped to Pages only
+  cannot read the account list, so `wrangler` cannot discover the account on its own.
+  The account ID is the 32-hex string in the dashboard URL
+  (`dash.cloudflare.com/<account-id>/...`).
 
 `build.py` also emits `site/404.html` and `site/_headers` (security and cache headers),
 both of which Cloudflare Pages picks up automatically.
