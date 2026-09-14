@@ -1,5 +1,5 @@
 # ILANG
-# [TYPE:module][PROJECT:vps-deals][LANG:zh]
+# [TYPE:module][PROJECT:vpsticker][LANG:zh]
 # ::ROLE{读 data/offers.json 加 .ilang/site.ilang 渲染静态站到 site/}
 # ::INPUT{data/offers.json 与 .ilang/site.ilang 的 PROVIDERS PAGE FIELDS 模块}
 # ::MUST{每页一条 canonical 每个优惠详情页嵌 Offer 结构化数据 sitemap 由本文件生成}
@@ -115,6 +115,8 @@ class Builder:
         self.cfg = cfg
         self.data = data
         self.base = cfg.base_url
+        self.noun = cfg.noun
+        self.headline = cfg.headline
         self.offers: list[dict[str, Any]] = data.get("offers", [])
         self.sources: list[dict[str, Any]] = data.get("sources", [])
         self.now = datetime.now(timezone.utc)
@@ -390,16 +392,20 @@ class Builder:
             f"see the <a href=\"/sources.html\">sources page</a> for the exact status of every provider on the last run."
         )
 
-        title = f"VPS Deals \u2014 Live VPS Prices from {len(self.cfg.providers)} Providers ({self.stamp_month})"
+        title = (
+            f"{self.headline} \u2014 Live {self.noun} Prices from "
+            f"{len(self.cfg.providers)} Providers ({self.stamp_month})"
+        )
         description = (
-            f"Independent VPS price radar. Lowest published monthly price from {len(self.cfg.providers)} hosting "
+            f"Independent {self.noun} price radar. Lowest published monthly price from "
+            f"{len(self.cfg.providers)} hosting "
             f"providers, refreshed every 6 hours. {len(active)} live offers, no estimated numbers."
         )
 
         content = render(
             load_tpl("index.html"),
             {
-                "H1": esc(f"VPS deals, read straight from the source ({self.stamp_month})"),
+                "H1": esc(f"{self.headline}, read straight from the source ({self.stamp_month})"),
                 "LEDE": esc(self.cfg.get("tagline")),
                 "STATS": stats,
                 "CARDS": cards or '<p class="muted">No offers with a published price on this run.</p>',
@@ -461,7 +467,7 @@ class Builder:
 
             product: dict[str, Any] = {
                 "@type": "Product",
-                "name": f"{p.name} VPS",
+                "name": f"{p.name} {self.noun}",
                 "brand": {"@type": "Brand", "name": p.name},
                 "url": self.url_for(self.provider_path(p.slug)),
                 "category": self.cfg.get("niche"),
@@ -481,12 +487,12 @@ class Builder:
             )
 
             title = (
-                f"{p.name} VPS Pricing \u2014 {lead} ({self.stamp_month}) | {self.cfg.brand}"
+                f"{p.name} {self.noun} Pricing \u2014 {lead} ({self.stamp_month}) | {self.cfg.brand}"
                 if prices
-                else f"{p.name} VPS Offers ({self.stamp_month}) | {self.cfg.brand}"
+                else f"{p.name} {self.noun} Offers ({self.stamp_month}) | {self.cfg.brand}"
             )
             description = (
-                f"{len(offers)} VPS offers tracked at {p.name} as of {self.stamp_date}. "
+                f"{len(offers)} {self.noun} offers tracked at {p.name} as of {self.stamp_date}. "
                 f"Prices read from {p.name}'s own public page. Entry price: {lead}."
             )
 
@@ -498,7 +504,7 @@ class Builder:
                         ("Providers", "/compare.html"),
                         (p.name, None),
                     ),
-                    "H1": esc(f"{p.name} VPS offers \u2014 {self.stamp_month}"),
+                    "H1": esc(f"{p.name} {self.noun} offers \u2014 {self.stamp_month}"),
                     "LEDE": esc(
                         f"Every offer below was read from {p.name}'s own public pricing page on "
                         f"{str(offers[0].get('fetched_at', ''))[:10]}. Nothing is estimated."
@@ -660,7 +666,7 @@ class Builder:
             load_tpl("compare.html"),
             {
                 "CRUMBS": self.crumbs((self.cfg.brand, "/"), ("Compare", None)),
-                "H1": esc(f"VPS price comparison \u2014 {self.stamp_month}"),
+                "H1": esc(f"{self.noun} price comparison \u2014 {self.stamp_month}"),
                 "LEDE": esc(
                     "Ranked purely by the lowest published monthly price we could read from each provider's own "
                     "page. No sponsor placement, no paid ordering."
@@ -677,9 +683,9 @@ class Builder:
             "compare.html",
             self.shell(
                 path="compare.html",
-                title=f"VPS Price Comparison \u2014 {len(rows)} Providers ({self.stamp_month}) | {self.cfg.brand}",
+                title=f"{self.noun} Price Comparison \u2014 {len(rows)} Providers ({self.stamp_month}) | {self.cfg.brand}",
                 description=(
-                    f"Side-by-side VPS pricing from {len(rows)} providers, ranked by published entry price, "
+                    f"Side-by-side {self.noun} pricing from {len(rows)} providers, ranked by published entry price, "
                     f"as read on {self.stamp_date}."
                 ),
                 content=content,
@@ -787,7 +793,7 @@ class Builder:
         page = self.shell(
             path="404.html",
             title=f"Page not found | {self.cfg.brand}",
-            description="That page is not on this site. Browse the live VPS deals instead.",
+            description=f"That page is not on this site. Browse the live {self.headline} instead.",
             content=content,
             jsonld=jsonld_script(
                 self.ld_breadcrumb([(self.cfg.brand, self.base), ("404", self.url_for("404.html"))])

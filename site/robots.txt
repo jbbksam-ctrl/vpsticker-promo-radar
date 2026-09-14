@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vps-deals.pages.dev/sitemap.xml
+Sitemap: https://vpsticker.com/sitemap.xml

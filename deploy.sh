@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ILANG
-# [TYPE:script][PROJECT:vps-deals][LANG:zh]
+# [TYPE:script][PROJECT:vpsticker][LANG:zh]
 # ::ROLE{把 site/ 部署到 Cloudflare Pages 免域名免钱}
 # ::PRECOND{环境变量 CLOUDFLARE_API_TOKEN 带 Cloudflare Pages:Edit 权限}
 # ::PRECOND{环境变量 CLOUDFLARE_ACCOUNT_ID 32 位十六进制账号 ID}
@@ -23,7 +23,7 @@ if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
   exit 1
 fi
 
-PROJECT="${1:-vps-deals}"
+PROJECT="${1:-vpsticker}"
 
 echo "==> 1/3 重新渲染站点"
 python build.py

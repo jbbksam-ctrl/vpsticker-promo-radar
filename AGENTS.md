@@ -1,7 +1,7 @@
 ILANG
-[TYPE:agents][PROJECT:vps-deals][LANG:zh]
+[TYPE:agents][PROJECT:vpsticker][LANG:zh]
 
-::STATE{@PROJECT, name:vps-deals-promo-radar, kind:优惠细分垂直站, brand:vps-deals, niche:VPS hosting deals, runtime:GitHub Actions 加 Cloudflare Pages, lang:Python 标准库}
+::STATE{@PROJECT, name:vpsticker-promo-radar, kind:优惠细分垂直站, brand:vpsticker, niche:VPS hosting deals, runtime:GitHub Actions 加 Cloudflare Pages, lang:Python 标准库}
 
 ::MODULE{WHAT|title:这个项目是什么}
   一个自己会更新的 VPS 优惠站 数据来自各家厂商自己的公开定价页

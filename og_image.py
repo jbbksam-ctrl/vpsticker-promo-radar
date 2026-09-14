@@ -1,5 +1,5 @@
 # ILANG
-# [TYPE:module][PROJECT:vps-deals][LANG:zh]
+# [TYPE:module][PROJECT:vpsticker][LANG:zh]
 # ::ROLE{生成社交分享大图 site/assets/og.png 纯 Python 手写 PNG 零依赖}
 # ::WHY{没有 og:image 社交平台转发出来就是一条裸链 有大图才有卡片}
 # ::BOUNDARY{never:引入第三方图像库 调用在线图片服务|scope:permanent}

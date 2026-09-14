@@ -1,9 +1,9 @@
-# vps-deals — VPS price radar
+# vpsticker — VPS price radar
 
 An independent VPS price radar. It reads the **published prices** from hosting providers'
 own public pricing pages, and rebuilds a static site from them every 6 hours.
 
-**Live site: https://vps-deals.pages.dev**
+**Live site: https://vpsticker.com**
 
 - No server. No API keys. No third-party Python packages. Standard library only.
 - No estimated numbers. If a provider does not publish a machine-readable price, the offer

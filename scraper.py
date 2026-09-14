@@ -1,5 +1,5 @@
 # ILANG
-# [TYPE:module][PROJECT:vps-deals][LANG:zh]
+# [TYPE:module][PROJECT:vpsticker][LANG:zh]
 # ::ROLE{抓取公开优惠数据 写 data/offers.json}
 # ::INPUT{.ilang/site.ilang 的 PROVIDERS 与 FIELDS 模块 本文件不持有厂商清单}
 # ::RULE{抓不到 price 就不写 price 字段 也不进结构化数据 不许拿估的填}
@@ -36,7 +36,7 @@ OFFERS_PATH = DATA_DIR / "offers.json"
 UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 "
-    "(+https://github.com/vps-deals-promo-radar; promo-radar-bot)"
+    "(+https://github.com/vpsticker-promo-radar; promo-radar-bot)"
 )
 TIMEOUT = 25
 POLITE_DELAY = 1.2  # 同一家抓完歇一下，别把人站打疼
@@ -45,7 +45,6 @@ _OPENER = urllib.request.build_opener()
 _OPENER_NOPROXY = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 _ROBOTS_CACHE: dict[str, dict[str, list[str]]] = {}
-BOT_TOKEN = "promo-radar-bot"
 
 # ---------------------------------------------------------------- 抓取
 

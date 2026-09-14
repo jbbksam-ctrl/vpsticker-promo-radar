@@ -1,5 +1,5 @@
 # ILANG
-# [TYPE:module][PROJECT:vps-deals][LANG:zh]
+# [TYPE:module][PROJECT:vpsticker][LANG:zh]
 # ::ROLE{解析 .ilang/site.ilang 的唯一实现 供 scraper.py 与 build.py 共用}
 # ::MUST{配置的唯一真源是 .ilang/site.ilang 本文件只解析 不内置任何厂商 品牌 域名}
 # ::BOUNDARY{never:在代码里另写一份厂商清单|scope:permanent}
@@ -91,6 +91,32 @@ class SiteConfig:
     @property
     def brand(self) -> str:
         return self.get("brand")
+
+    @property
+    def niche(self) -> str:
+        return self.get("niche")
+
+    @property
+    def noun(self) -> str:
+        """文案里指代本行业的名词（如 VPS）。配置里没写就从 niche 首个词兜底。"""
+        explicit = self.get("noun")
+        if explicit:
+            return explicit
+        words = self.niche.split()
+        return words[0] if words else self.brand
+
+    @property
+    def headline(self) -> str:
+        """首页标题用的短名词（如 VPS Deals）。没写就从 niche 派生：首词 + 末词。"""
+        explicit = self.get("headline")
+        if explicit:
+            return explicit
+        words = [w for w in self.niche.split() if w]
+        if not words:
+            return self.noun
+        if len(words) == 1:
+            return words[0]
+        return f"{words[0]} {words[-1].capitalize()}"
 
     @property
     def domain(self) -> str:
