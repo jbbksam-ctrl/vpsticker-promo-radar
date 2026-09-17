@@ -101,10 +101,18 @@ def jsonld_script(*nodes: dict[str, Any]) -> str:
 
 
 def rel(path: str) -> str:
-    """站内相对路径 -> 规范 URL。index.html 归一成目录。"""
-    if path in ("index.html", ""):
+    """站内相对路径 -> 站内绝对路径。
+
+    Cloudflare Pages 会把 x.html 308 到无扩展名的 /x，所以这里直接输出最终地址：
+    站内链接和 canonical 都不再指向一次多余的跳转。index.html 归一成 /。
+    非 .html 的资源（如 assets/og.png）原样保留。
+    """
+    p = path.lstrip("/")
+    if p in ("index.html", ""):
         return "/"
-    return "/" + path.lstrip("/")
+    if p.endswith(".html"):
+        p = p[:-5]
+    return "/" + p
 
 
 # ---------------------------------------------------------------- 页面外壳
@@ -184,6 +192,7 @@ class Builder:
                 "JSONLD": jsonld,
                 "CONTENT": content,
                 "FOOTER_NOTE": esc(self.footer_note()),
+                "FOOTER_LINKS": self.footer_links(),
                 "GENERATED": esc(f"Data last refreshed {self.generated_at} (UTC)."),
             },
         )
@@ -196,6 +205,19 @@ class Builder:
             f"Some outbound links may be affiliate links. "
             f"Site rules are described in the I-Lang protocol \u2014 see .ilang/site.ilang "
             f"(protocol notes: ilang.ai)."
+        )
+
+    def footer_links(self) -> str:
+        items = [
+            ("Deals", "index.html"),
+            ("Compare", "compare.html"),
+            ("Sources", "sources.html"),
+            ("About", "about.html"),
+            ("Contact", "contact.html"),
+            ("Privacy", "privacy.html"),
+        ]
+        return "".join(
+            f'<a href="{esc(rel(path))}">{esc(label)}</a>' for label, path in items
         )
 
     # ---- 组件 ----
@@ -290,6 +312,9 @@ class Builder:
         self.build_deals()
         self.build_compare()
         self.build_sources()
+        self.build_about()
+        self.build_contact()
+        self.build_privacy()
         self.build_sitemap()
         self.build_robots()
         self.build_404()
@@ -346,8 +371,8 @@ class Builder:
             ),
             (
                 "How often is this updated?",
-                "The scraper and the site rebuild run on a schedule, every 6 hours. Each run is committed to the public "
-                "repository, so the update history is auditable.",
+                "The scraper and the site rebuild run on a schedule, every 6 hours. Every page carries the exact UTC "
+                "timestamp of the fetch it was built from, so you can always tell how fresh what you are reading is.",
             ),
             (
                 "Do you earn from these links?",
@@ -386,10 +411,10 @@ class Builder:
         method = (
             f"Once every 6 hours a plain Python scraper fetches the public pricing page of each of the "
             f"{len(self.cfg.providers)} providers listed below, reads the published prices, and writes them to a JSON "
-            f"file in the public repository. A second script renders that file into these static pages. "
+            f"file. A second script renders that file into these static pages. "
             f"No inference runs at build time, no API keys are used, and nothing is filled in by hand. "
             f"Providers whose pages hide prices behind JavaScript are listed as such rather than approximated \u2014 "
-            f"see the <a href=\"/sources.html\">sources page</a> for the exact status of every provider on the last run."
+            f"see the <a href=\"{rel('sources.html')}\">sources page</a> for the exact status of every provider on the last run."
         )
 
         title = (
@@ -501,7 +526,7 @@ class Builder:
                 {
                     "CRUMBS": self.crumbs(
                         (self.cfg.brand, "/"),
-                        ("Providers", "/compare.html"),
+                        ("Providers", rel("compare.html")),
                         (p.name, None),
                     ),
                     "H1": esc(f"{p.name} {self.noun} offers \u2014 {self.stamp_month}"),
@@ -749,13 +774,248 @@ class Builder:
             ),
         )
 
+    # about / contact / privacy —— 散文页
+    def prose_page(
+        self,
+        *,
+        path: str,
+        crumb: str,
+        h1: str,
+        lede: str,
+        body: str,
+        title: str,
+        description: str,
+        show_updated: bool = True,
+    ) -> None:
+        updated_line = (
+            f'<p class="updated">Last updated {esc(self.stamp_date)}.</p>'
+            if show_updated
+            else ""
+        )
+        content = render(
+            load_tpl("page.html"),
+            {
+                "CRUMBS": self.crumbs((self.cfg.brand, "/"), (crumb, None)),
+                "H1": esc(h1),
+                "LEDE": esc(lede),
+                "UPDATED_LINE": updated_line,
+                "BODY": body,
+            },
+        )
+        self.emit(
+            path,
+            self.shell(
+                path=path,
+                title=title,
+                description=description,
+                content=content,
+                jsonld=jsonld_script(
+                    self.ld_breadcrumb(
+                        [(self.cfg.brand, self.base), (crumb, self.url_for(path))]
+                    )
+                ),
+            ),
+        )
+
+    def build_about(self) -> None:
+        brand = esc(self.cfg.brand)
+        sources = esc(rel("sources.html"))
+        body = (
+            f"<p>{brand} is an independent {esc(self.noun)} price radar. It reads the prices that "
+            "hosting providers publish on their own public pricing pages, and rebuilds this site "
+            "from them every six hours.</p>"
+
+            "<h2>How it works</h2>"
+            "<p>A scheduled job fetches each provider's public pricing page, extracts the prices "
+            "that are actually published there, and writes them into this site. There is no "
+            "database, no account, and no hand-entered data.</p>"
+            "<p>Every offer links back to the exact page it was read from. The "
+            f'<a href="{sources}">Sources</a> page shows, provider by provider, the HTTP result, '
+            "how the price was extracted, and how many offers were found on the last run "
+            "&mdash; including the providers that produced nothing.</p>"
+
+            "<h2>What this site does not do</h2>"
+            "<ul>"
+            "<li>It does not estimate, average, or back-fill a missing price. If a provider does "
+            "not publish a machine-readable price, the offer is listed <em>without</em> a price.</li>"
+            "<li>It does not bypass bot protection, log in anywhere, or read anything that is not "
+            "a public page.</li>"
+            "<li>It does not accept payment for placement. Ordering is by published price only "
+            "&mdash; nobody can pay to move up.</li>"
+            "<li>It is not affiliated with any of the providers listed.</li>"
+            "</ul>"
+
+            "<h2>Affiliate disclosure</h2>"
+            "<p>Some outbound links on this site may be affiliate links. If you sign up through "
+            "one, we may earn a commission at no extra cost to you. Affiliate status never affects "
+            "whether a provider is listed, where it ranks, or what price is shown &mdash; the "
+            "numbers are read from the providers' own pages either way.</p>"
+
+            "<h2>Why a price here may differ from what you see</h2>"
+            "<p>Prices change. A price shown here was true on the provider's own page at the "
+            "timestamp printed on the offer. Always confirm on the provider's site before "
+            "buying.</p>"
+        )
+        self.prose_page(
+            path="about.html",
+            crumb="About",
+            h1=f"About {self.cfg.brand}",
+            lede="What this site is, how the prices are collected, and what it refuses to do.",
+            body=body,
+            title=f"About \u2014 how the prices are collected | {self.cfg.brand}",
+            description=(
+                f"{self.cfg.brand} is an independent {self.noun} price radar: public prices read "
+                f"from providers' own pages every six hours. No paid placement, no estimated numbers."
+            ),
+        )
+
+    def build_contact(self) -> None:
+        email = self.cfg.contact_email
+        if not email:
+            raise ValueError(
+                "site.ilang 的 ::STATE{@SITE ...} 里没有 contact_email，"
+                "拒绝生成 contact.html —— 联系方式不许留空或占位"
+            )
+        mailto = f'<p><a href="mailto:{esc(email)}">{esc(email)}</a></p>'
+        sources = esc(rel("sources.html"))
+        privacy = esc(rel("privacy.html"))
+        body = (
+            f"<p>The fastest way to reach {esc(self.cfg.brand)} is email.</p>"
+            "<h2>Email</h2>"
+            f"{mailto}"
+
+            "<h2>What we can help with</h2>"
+            "<ul>"
+            "<li>A price on this site that does not match the provider's own page.</li>"
+            "<li>A link that is broken or points at the wrong offer.</li>"
+            "<li>A provider we should be tracking &mdash; or one we should stop tracking.</li>"
+            f'<li>A question about how the data is collected. The <a href="{sources}">Sources</a> '
+            "page usually answers it first.</li>"
+            "</ul>"
+
+            "<h2>What we cannot help with</h2>"
+            "<ul>"
+            "<li>Billing, refunds, server problems, or support tickets. We do not sell hosting and "
+            "are not affiliated with any provider &mdash; please contact the provider directly.</li>"
+            "<li>Sales enquiries. Nothing on this site is for sale, and we do not accept paid "
+            "placement.</li>"
+            "</ul>"
+
+            "<h2>Response time</h2>"
+            "<p>We read everything, but we cannot promise a reply time.</p>"
+
+            "<h2>Privacy</h2>"
+            f'<p>What we do with your message is covered on the <a href="{privacy}">privacy '
+            "page</a>.</p>"
+        )
+        self.prose_page(
+            path="contact.html",
+            crumb="Contact",
+            h1="Contact",
+            lede="Corrections, broken links, and questions about the data.",
+            body=body,
+            title=f"Contact | {self.cfg.brand}",
+            description=(
+                f"How to reach {self.cfg.brand} about a wrong price, a broken link, or how the "
+                f"data is collected."
+            ),
+        )
+
+    def build_privacy(self) -> None:
+        domain = esc(self.cfg.domain)
+        contact = esc(rel("contact.html"))
+        body = (
+            f"<p>This policy explains what happens to your data when you visit {domain}. "
+            "It is short, because this site does very little with it.</p>"
+
+            "<h2>What this site collects directly</h2>"
+            "<ul>"
+            "<li><strong>No accounts.</strong> There is nothing to sign up for.</li>"
+            "<li><strong>No forms.</strong> There are no contact forms, comment boxes, or "
+            "newsletter sign-ups on this site.</li>"
+            "<li><strong>No cookies set by this site.</strong> We do not set cookies, and we do "
+            "not use local storage or anything similar.</li>"
+            "<li><strong>No analytics or tracking of our own.</strong> We do not run our own "
+            "analytics script, tag manager, or session recorder on this site.</li>"
+            "<li><strong>Third-party advertising.</strong> This site displays ads from third-party "
+            "ad networks. Those networks may set their own cookies and collect data (such as your IP "
+            "address, browser type, and pages visited) under their own privacy policies. You can "
+            "usually control or disable advertising cookies in your browser settings or through the "
+            "ad network's opt-out page.</li>"
+            "</ul>"
+
+            "<h2>What ad networks may collect</h2>"
+            "<p>When you visit a page that shows an ad, the ad network's script runs in your browser. "
+            "Depending on the network, it may collect:</p>"
+            "<ul>"
+            "<li>Your IP address and approximate location.</li>"
+            "<li>Your browser type, screen size, and operating system.</li>"
+            "<li>Which pages you viewed on this site.</li>"
+            "<li>A cookie or similar identifier so the network can remember your preferences or "
+            "limit how often you see the same ad.</li>"
+            "</ul>"
+            "<p>We do not control what the ad network collects &mdash; that is governed by the "
+            "network's own privacy policy. What we can promise is that ad placement never changes "
+            "which deals are listed or how they rank. Ranking is always by published price.</p>"
+
+            "<h2>What the hosting provider sees</h2>"
+            "<p>This site is a set of static files served by Cloudflare. Like any web host or "
+            "content delivery network, Cloudflare processes request data &mdash; such as your IP "
+            "address, user agent, and the page requested &mdash; in order to deliver the page and "
+            "protect the site from abuse. That processing is carried out by Cloudflare under "
+            '<a href="https://www.cloudflare.com/privacypolicy/" rel="nofollow noopener" '
+            'target="_blank">Cloudflare\'s own privacy policy</a>. We do not run a separate '
+            "analytics system on top of it.</p>"
+
+            "<h2>Outbound links</h2>"
+            "<p>Links to hosting providers take you to someone else's website. Once you are there, "
+            "that provider's own privacy and cookie policies apply &mdash; not this one. Some of "
+            "those links may be affiliate links, meaning a commission may be paid to us if you sign "
+            "up. Affiliate status never affects what is listed or how it ranks.</p>"
+
+            "<h2>Email</h2>"
+            f'<p>If you email us, we keep your message and your address so we can reply. We do not '
+            f'add you to any mailing list, and we do not sell or share your address. See the '
+            f'<a href="{contact}">contact page</a>.</p>'
+
+            "<h2>What we do not do</h2>"
+            "<ul>"
+            "<li>We do not sell, rent, or trade personal data.</li>"
+            "<li>We do not build visitor profiles.</li>"
+            "<li>We do not knowingly collect data from children.</li>"
+            "</ul>"
+
+            "<h2>Changes to this policy</h2>"
+            "<p>If this policy changes, the date at the top of this page changes with it.</p>"
+        )
+        self.prose_page(
+            path="privacy.html",
+            crumb="Privacy",
+            h1="Privacy policy",
+            lede="What this site does and does not do with your data.",
+            body=body,
+            title=f"Privacy policy | {self.cfg.brand}",
+            description=(
+                "No accounts, no forms, no cookies set by this site, no first-party analytics. "
+                "This site shows third-party ads; see what ad networks may collect and how to opt out. "
+                "What Cloudflare sees as the host, and what happens when you click an outbound link."
+            ),
+        )
+
     # sitemap / robots / assets
     def build_sitemap(self) -> None:
         lines = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
         ]
-        priority = {"index.html": "1.0", "compare.html": "0.8", "sources.html": "0.5"}
+        priority = {
+            "index.html": "1.0",
+            "compare.html": "0.8",
+            "sources.html": "0.5",
+            "about.html": "0.4",
+            "contact.html": "0.3",
+            "privacy.html": "0.2",
+        }
         for page in self.pages:
             loc = self.url_for(page["path"])
             pri = priority.get(page["path"], "0.7")
@@ -787,7 +1047,7 @@ class Builder:
             '<p class="lede">That URL is not on this site. It may have been a deal that was '
             "withdrawn, or a typo. Here is what is live right now.</p>"
             '<p><a class="btn" href="/">All deals</a> '
-            '<a class="btn" href="/compare.html">Compare</a></p></section>'
+            '<a class="btn" href="/compare">Compare</a></p></section>'
             f'<div class="cards">{cards}</div>'
         )
         page = self.shell(

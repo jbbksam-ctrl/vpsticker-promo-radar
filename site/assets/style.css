@@ -101,6 +101,26 @@ h2 { font-size: 20px; margin: 40px 0 8px; letter-spacing: -0.01em; }
 .crumbs a { color: var(--muted); }
 .crumbs span { margin: 0 6px; }
 
+/* 散文页：About / Contact / Privacy */
+.prose { max-width: 74ch; }
+.prose h2 { font-size: 20px; margin: 36px 0 8px; }
+.prose h3 { font-size: 17px; margin: 24px 0 6px; }
+.prose p, .prose li { color: #dbe4f0; }
+.prose p { margin: 0 0 13px; }
+.prose ul { margin: 0 0 15px; padding-left: 22px; }
+.prose li { margin: 7px 0; }
+.prose strong { color: var(--fg); }
+.prose .updated { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+.prose code {
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 1px 6px; font-size: 13px;
+}
+.prose a { word-break: break-word; }
+
+.site-footer .footlinks { margin-top: 10px; }
+.site-footer .footlinks a { color: var(--muted); margin-right: 14px; }
+.site-footer .footlinks a:hover { color: var(--accent); }
+
 .tablewrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: var(--radius); }
 table.compare { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
 table.compare th, table.compare td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); }

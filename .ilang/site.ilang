@@ -1,7 +1,7 @@
 ILANG
 [TYPE:config][PROJECT:vpsticker][LANG:zh]
 
-::STATE{@SITE, brand:vpsticker, niche:VPS hosting deals, noun:VPS, headline:VPS Deals, domain:vpsticker.com, locale:en-US, currency:USD, tagline:Independent VPS price radar — real prices from public sources updated every 6 hours.}
+::STATE{@SITE, brand:vpsticker, niche:VPS hosting deals, noun:VPS, headline:VPS Deals, domain:vpsticker.com, locale:en-US, currency:USD, tagline:Independent VPS price radar — real prices from public sources updated every 6 hours., contact_email:sanhu12138@outlook.com}
 
 ::MODULE{PROVIDERS|title:抓哪几家 这里改了站就变}
   IONOS | https://www.ionos.com | https://www.ionos.com/servers/vps |  | jsonld

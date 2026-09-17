@@ -44,13 +44,20 @@ POLITE_DELAY = 1.2  # 同一家抓完歇一下，别把人站打疼
 _OPENER = urllib.request.build_opener()
 _OPENER_NOPROXY = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
+# 只对"没通"的地址重试，通了的就不重试（只读公开页面，别把人家站打疼）。
+_RETRY_CODES = frozenset({403, 408, 425, 429, 500, 502, 503, 504})
+
+# 响应 Server 头里出现这些字样，说明这份响应是 CDN / 网关这种中间设备给的，
+# 不一定是目标站自己的真实答复 —— 值得换直连再核一次。
+_MIDDLEBOX_MARKERS = ("cloudflare", "Google Frontend", "gws", "Varnish", "nginx")
+
 _ROBOTS_CACHE: dict[str, dict[str, list[str]]] = {}
 
 # ---------------------------------------------------------------- 抓取
 
 
-def fetch(url: str) -> tuple[int, str, str]:
-    """返回 (http状态, 正文, 最终URL)。先走默认 opener，失败再直连。"""
+def _fetch_once(url: str, opener) -> tuple[int, str, str, str, str]:
+    """单次请求。返回 (状态, 正文, 最终URL, 请求UA, 响应Server头)。"""
     req = urllib.request.Request(
         url,
         headers={
@@ -60,27 +67,83 @@ def fetch(url: str) -> tuple[int, str, str]:
             "Accept-Encoding": "gzip, deflate",
         },
     )
+    try:
+        with opener.open(req, timeout=TIMEOUT) as resp:
+            raw = resp.read()
+            enc = (resp.headers.get("Content-Encoding") or "").lower()
+            if "gzip" in enc:
+                raw = gzip.decompress(raw)
+            elif "deflate" in enc:
+                try:
+                    raw = zlib.decompress(raw)
+                except zlib.error:
+                    raw = zlib.decompress(raw, -zlib.MAX_WBITS)
+            charset = resp.headers.get_content_charset() or "utf-8"
+            server = resp.headers.get("Server") or ""
+            return resp.status, raw.decode(charset, errors="replace"), resp.geturl(), req.get_header("User-agent") or "", server
+    except urllib.error.HTTPError as e:
+        return e.code, "", url, req.get_header("User-agent") or "", (e.headers.get("Server") or "")
+
+
+def _is_middlebox(status: int, server: str) -> bool:
+    """响应像不像中间设备给的，而不是目标站自己的真实答复。"""
+    return status in _RETRY_CODES and any(m in server for m in _MIDDLEBOX_MARKERS)
+
+
+def fetch(url: str) -> tuple[int, str, str]:
+    """返回 (http状态, 正文, 最终URL)。
+
+    先走默认 opener（本机设了代理时就走代理），没通再试直连。
+    另有两条重试，都**只在有证据**时触发，不盲目重试：
+      1. 响应像中间设备伪造的（状态属 _RETRY_CODES 且 Server 头是 CDN/网关特征）
+         —— 换直连再试；
+      2. Worker 被 Cloudflare 防火墙拦的（403 + error code 1009）—— 退避后原路重试。
+         官方说明 1009 是「同 IP 短时间请求过多」的限流，等一会儿重来是对的。
+    """
+    # 队列元素 = (标签, opener, 这条还需重试几次)
+    queue: list[tuple[str, Any, int]] = [("default", _OPENER, 0), ("noproxy", _OPENER_NOPROXY, 0)]
+    guard = 0
+    idx = 0
     last_err: Exception | None = None
-    for opener in (_OPENER, _OPENER_NOPROXY):
+    fallback: tuple[int, str, str] | None = None
+
+    while idx < len(queue):
+        label, opener, left = queue[idx]
+        idx += 1
+        guard += 1
+        if guard > 6:
+            break
+
         try:
-            with opener.open(req, timeout=TIMEOUT) as resp:
-                raw = resp.read()
-                enc = (resp.headers.get("Content-Encoding") or "").lower()
-                if "gzip" in enc:
-                    raw = gzip.decompress(raw)
-                elif "deflate" in enc:
-                    try:
-                        raw = zlib.decompress(raw)
-                    except zlib.error:
-                        raw = zlib.decompress(raw, -zlib.MAX_WBITS)
-                charset = resp.headers.get_content_charset() or "utf-8"
-                text = raw.decode(charset, errors="replace")
-                return resp.status, text, resp.geturl()
-        except urllib.error.HTTPError as e:
-            return e.code, "", url
+            status, text, final, ua, server = _fetch_once(url, opener)
         except Exception as e:  # noqa: BLE001
             last_err = e
-    raise RuntimeError(f"抓取失败 {url}: {last_err}")
+            if label == "default":
+                continue  # 代理没通，换直连
+            raise RuntimeError(f"抓取失败 {url}: {e}") from e
+
+        # 1. 中间设备伪造的响应 -> 换直连再试
+        if _is_middlebox(status, server) and label == "default":
+            continue
+
+        # 2. Cloudflare 拦到 Worker 自己 -> 退避后原路重试
+        if status == 403 and "error code: 1009" in text.lower() and left > 0:
+            time.sleep(POLITE_DELAY * 2)
+            queue.append((label, opener, left - 1))
+            continue
+
+        # 3. 中间设备伪造的响应已经把直连也试过了 -> 记下来，但仍优先返回能用的那个
+        if _is_middlebox(status, server):
+            fallback = fallback or (status, text, final)
+            continue
+
+        return status, text, final
+
+    if fallback is not None:
+        return fallback
+    if last_err is not None:
+        raise RuntimeError(f"抓取失败 {url}: {last_err}")
+    return 0, "", url
 
 
 def robots_allowed(url: str) -> bool:

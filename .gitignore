@@ -6,3 +6,8 @@ venv/
 _live_check/
 .DS_Store
 Thumbs.db
+
+# 自动更新的运行痕迹，不进仓库
+refresh.log
+refresh.state.json
+task_runner.log

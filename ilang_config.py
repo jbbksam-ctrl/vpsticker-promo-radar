@@ -138,6 +138,11 @@ class SiteConfig:
         return self.get("currency", "USD")
 
     @property
+    def contact_email(self) -> str:
+        """联系页用的邮箱。配置里没写就返回空串，由调用方决定怎么处理。"""
+        return self.get("contact_email").strip()
+
+    @property
     def per_page(self) -> int:
         try:
             return int(self.page.get("per_page", "24"))
