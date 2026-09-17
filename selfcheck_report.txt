@@ -1,0 +1,121 @@
+[1] 产物统计：59 个文件，其中 52 个 HTML
+
+========================================================================
+ITEM:5 内链检查
+========================================================================
+站内链接总数（含图片）：857
+外链去重后：26
+断链：0
+  OK 无断链
+
+========================================================================
+ITEM:4 薄内容 / 空壳页检查
+========================================================================
+正文少于 180 词的页面：2 / 52
+    135 words   2 paras   404.html
+    169 words   7 paras   contact.html
+
+命中模板占位/空壳关键词的页面：0
+  OK 无 lorem/coming soon/TBD/未渲染占位符
+
+正文词数分布：
+       <100 words :   0 页
+    100-179 words :   2 页
+    180-399 words :   0 页
+    400-799 words :  22 页
+       800+ words :  28 页
+
+========================================================================
+ITEM:6 移动端检查（静态可查部分）
+========================================================================
+缺 viewport meta 的页：0
+  OK 全部页面都有 width=device-width
+style.css 字节数：7326
+含 @media 查询：1 处
+  @media (max-width: 640px) {
+CSS 里 >=100px 的固定 width：3 处 ['1080', '640', '640']
+overflow-x 声明：['hidden', 'auto']
+table-layout：[]
+
+========================================================================
+ITEM:7 加载性能（产物体积）
+========================================================================
+  .html       52 个  合计    525.4 KB  最大    14.8 KB
+  .xml         1 个  合计      8.3 KB  最大     8.3 KB
+  .css         1 个  合计      7.3 KB  最大     7.3 KB
+  .png         1 个  合计      5.3 KB  最大     5.3 KB
+  (none)       2 个  合计      0.3 KB  最大     0.3 KB
+  .svg         1 个  合计      0.3 KB  最大     0.3 KB
+  .txt         1 个  合计      0.1 KB  最大     0.1 KB
+
+最大的 8 个文件：
+      14.8 KB  index.html
+      12.5 KB  compare.html
+      12.2 KB  provider/inmotion-hosting.html
+      11.5 KB  deal/inmotion-hosting-vps-2-vcpu-7-99-month.html
+      11.3 KB  deal/buyvm-buyvm-kvm-slices-dedicated-server-performance-with-100-ssd-s-2.html
+      11.3 KB  deal/inmotion-hosting-vps-4-vcpu-9-99-month.html
+      11.1 KB  deal/inmotion-hosting-vps-12-vcpu-31-99-month.html
+      11.1 KB  deal/inmotion-hosting-vps-8-vcpu-19-99-month.html
+
+各页总字节（HTML 自身）：
+  最大 14.8 KB  index.html
+  最小 4.3 KB  contact.html
+  中位 10.4 KB
+  平均 10.1 KB
+
+外部资源引用（影响加载的外站请求）：
+  https://vpsticker.com/
+  https://vpsticker.com/404
+  https://vpsticker.com/about
+  https://vpsticker.com/compare
+  https://vpsticker.com/contact
+  https://vpsticker.com/deal/buyvm-buyvm-kvm-slices-dedicated-server-performance-with-100-ssd-s-2
+  https://vpsticker.com/deal/buyvm-buyvm-kvm-slices-dedicated-server-performance-with-100-ssd-stora
+  https://vpsticker.com/deal/cloudzy-cloudzy-independent-cloud-for-builders-since-2008-from-2-48-mo
+  https://vpsticker.com/deal/cloudzy-cloudzy-independent-cloud-for-builders-since-2008-from-30-yr-3
+  https://vpsticker.com/deal/digitalocean-budget-friendly-cloud-server-pricing-digitalocean-from-4-
+  https://vpsticker.com/deal/dreamhost-vps-hosting-with-full-root-access-dreamhost-from-8-99-mo-8-9
+  https://vpsticker.com/deal/greengeeks-16-gb-vps-179-95-month
+  https://vpsticker.com/deal/greengeeks-4-gb-vps-69-95-month
+  https://vpsticker.com/deal/greengeeks-8-gb-vps-129-95-month
+  https://vpsticker.com/deal/hostinger-kvm-1-6-49-month
+  https://vpsticker.com/deal/hostinger-kvm-2-8-99-month
+  https://vpsticker.com/deal/hostinger-kvm-4-12-99-month
+  https://vpsticker.com/deal/hostinger-kvm-8-25-99-month
+  https://vpsticker.com/deal/hostwinds-linux-vps-hosting-ssd-virtual-private-servers-hostwinds-from
+  https://vpsticker.com/deal/inmotion-hosting-vps-12-vcpu-31-99-month
+  https://vpsticker.com/deal/inmotion-hosting-vps-16-vcpu-39-99-month
+  https://vpsticker.com/deal/inmotion-hosting-vps-2-vcpu-7-99-month
+  https://vpsticker.com/deal/inmotion-hosting-vps-4-vcpu-9-99-month
+  https://vpsticker.com/deal/inmotion-hosting-vps-8-vcpu-19-99-month
+  https://vpsticker.com/deal/inmotion-hosting-vps-hosting-7-72-month
+  https://vpsticker.com/deal/ionos-vps-2-0-month
+  https://vpsticker.com/deal/ovhcloud-vps-from-1-4-mo-1-4-month
+  https://vpsticker.com/deal/scalahosting-cloud-hosting-services-that-adapt-to-your-needs-scalahost
+  https://vpsticker.com/deal/ssd-nodes-ssd-nodes-5-5-month
+  https://vpsticker.com/deal/transip-vps-a-virtual-private-server-for-every-project-transip-from-12
+  https://vpsticker.com/deal/ultahost-vps-hosting-4-8-month
+  https://vpsticker.com/deal/verpex-vps-d16-40-0-month
+  https://vpsticker.com/deal/verpex-vps-d32-55-0-month
+  https://vpsticker.com/deal/verpex-vps-d4-10-0-month
+  https://vpsticker.com/deal/verpex-vps-d8-20-0-month
+  https://vpsticker.com/privacy
+  https://vpsticker.com/provider/buyvm
+  https://vpsticker.com/provider/cloudzy
+  https://vpsticker.com/provider/digitalocean
+  https://vpsticker.com/provider/dreamhost
+  https://vpsticker.com/provider/greengeeks
+  https://vpsticker.com/provider/hostinger
+  https://vpsticker.com/provider/hostwinds
+  https://vpsticker.com/provider/inmotion-hosting
+  https://vpsticker.com/provider/ionos
+  https://vpsticker.com/provider/ovhcloud
+  https://vpsticker.com/provider/scalahosting
+  https://vpsticker.com/provider/ssd-nodes
+  https://vpsticker.com/provider/transip
+  https://vpsticker.com/provider/ultahost
+  https://vpsticker.com/provider/verpex
+  https://vpsticker.com/sources
+
+sitemap 条数： 51

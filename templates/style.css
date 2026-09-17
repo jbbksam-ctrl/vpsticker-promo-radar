@@ -20,6 +20,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  overflow-x: hidden;   /* 兜底：任何没预料到的长内容都不该让整页横向滚动 */
 }
 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
@@ -133,6 +134,23 @@ details { border: 1px solid var(--line); border-radius: var(--radius); padding: 
 details summary { cursor: pointer; font-weight: 600; }
 details p { color: var(--muted); margin: 10px 0 0; }
 
+/* 首屏答案块：把「这个价格意味着什么」放在最前，读者一眼得到结论 */
+.answer { border-left: 3px solid var(--accent); padding: 2px 0 2px 16px; margin: 18px 0 22px; }
+.answer p { margin: 0 0 12px; font-size: 16px; }
+.answer p:last-child { margin-bottom: 0; }
+
+/* 详情正文分节 */
+.deep { margin-top: 34px; }
+.deep h2 { font-size: 20px; margin-bottom: 12px; }
+.deep ul { margin: 0; padding-left: 22px; }
+.deep ul li { margin-bottom: 10px; font-size: 15px; }
+.deep p { font-size: 15px; }
+
+/* 长 URL / 长单词不得撑破版面（手机上是必现问题：页面里有 40+ 字符的裸 URL 文字） */
+a { overflow-wrap: anywhere; word-break: break-word; }
+.facts dd, .deep, .answer, .card .ttl { overflow-wrap: anywhere; }
+img { max-width: 100%; height: auto; }
+
 .site-footer { border-top: 1px solid var(--line); padding: 24px 0 40px; margin-top: 40px; }
 .site-footer p { margin: 0 0 6px; font-size: 14px; color: var(--muted); }
 
@@ -141,4 +159,10 @@ details p { color: var(--muted); margin: 10px 0 0; }
   .price { font-size: 32px; }
   .site-header .wrap { height: auto; padding: 12px 20px; flex-direction: column; align-items: flex-start; gap: 6px; }
   .nav a { margin-left: 0; margin-right: 16px; }
+  .answer { padding-left: 12px; }
+  .answer p { font-size: 15px; }
+  .deep h2 { font-size: 18px; }
+  .deep ul { padding-left: 18px; }
+  .facts { grid-template-columns: 1fr; gap: 2px 0; }
+  .facts dt { margin-top: 10px; font-weight: 600; }
 }

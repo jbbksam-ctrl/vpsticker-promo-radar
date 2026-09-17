@@ -136,6 +136,21 @@ class Builder:
         self.stamp_month = f"{MONTHS[gen_dt.month - 1]} {gen_dt.year}"
         self.stamp_date = gen_dt.strftime("%Y-%m-%d")
         self.pages: list[dict[str, str]] = []
+        # 静态资源的版本指纹。assets/ 下配了 immutable 的一年缓存，改内容不会自动失效，
+        # 所以把内容哈希拼进 URL：内容一变 URL 就变，缓存自然绕开。
+        self.asset_ver = self._asset_version()
+
+    def _asset_version(self) -> str:
+        """把要发出去的静态资源（CSS/SVG/PNG）内容合起来取短哈希。"""
+        import hashlib
+
+        h = hashlib.sha256()
+        for name in ("style.css", "favicon.svg", "og.png"):
+            p = TPL_DIR / name
+            if p.exists():
+                h.update(name.encode("utf-8"))
+                h.update(p.read_bytes())
+        return h.hexdigest()[:8]
 
     # ---- 通用 ----
 
@@ -186,8 +201,9 @@ class Builder:
                 "CANONICAL": esc(canonical),
                 "HREFLANG": hreflang,
                 "OG_TYPE": og_type,
-                "OG_IMAGE": esc(self.url_for("assets/og.png")),
+                "OG_IMAGE": esc(self.url_for("assets/og.png") + f"?v={self.asset_ver}"),
                 "OG_LOCALE": self.cfg.locale.replace("-", "_"),
+                "ASSET_VER": esc(self.asset_ver),
                 "BRAND": esc(self.cfg.brand),
                 "JSONLD": jsonld,
                 "CONTENT": content,
@@ -220,7 +236,145 @@ class Builder:
             f'<a href="{esc(rel(path))}">{esc(label)}</a>' for label, path in items
         )
 
-    # ---- 组件 ----
+    # ---- 正文内容（补足页面厚度，全部由真实数据或配置词库生成）----
+
+    def priced_offers(self) -> list[dict[str, Any]]:
+        """本站所有带价格的在售 offer，按 price_monthly 升序。"""
+        priced = [o for o in self.active_offers() if o.get("price_monthly") is not None]
+        return sorted(priced, key=lambda x: x["price_monthly"])
+
+    def rank_of(self, o: dict[str, Any]) -> tuple[int, int] | None:
+        """这条 offer 在本站同币种在售清单里的排名（1-based）与总数。
+
+        这是本站独家数据 —— 除了自己的抓取结果，没有第二家能给这个位置。
+        币种不同的不混排，避免拿 EUR 跟 USD 直接比大小。
+        取不到价格就返回 None，不硬排。
+        """
+        if o.get("price_monthly") is None:
+            return None
+        cur = o.get("currency", "")
+        pool = [x for x in self.priced_offers() if x.get("currency", "") == cur]
+        if not pool:
+            return None
+        for i, x in enumerate(pool, 1):
+            if x.get("_slug") == o.get("_slug"):
+                return i, len(pool)
+        return None
+
+    def cheaper_share(self, o: dict[str, Any]) -> str:
+        """同类里比它便宜的占比，写成一句可复核的话。
+
+        排名口径：全部折算到月再比，因为各家计价周期不同（月付/年付混在一起）。
+        文案里点明这一点，免得读者把年付价当成月付价来理解。
+        """
+        rk = self.rank_of(o)
+        if not rk:
+            return ""
+        i, n = rk
+        if n < 2:
+            return ""
+        below = i - 1
+        pct = round(below * 100 / n)
+        cur = o.get("currency", "")
+        caveat = (
+            "All offers are compared on a monthly-equivalent basis "
+            "(annual plans divided by 12), because providers bill on different cycles."
+        )
+        if below == 0:
+            return (
+                f"It is the cheapest {cur} listing currently tracked on this site, "
+                f"out of {n} priced {cur} offers. {caveat}"
+            )
+        return (
+            f"{below} of the {n} priced {cur} offers tracked on this site are cheaper than this one "
+            f"({pct}%). That count is computed from this site's own fetch results, not an estimate. "
+            f"{caveat}"
+        )
+
+    def peers(self, o: dict[str, Any], limit: int = 3) -> list[dict[str, Any]]:
+        """同价位区间的其他家在售 offer，用于「差不多价钱还有什么选择」。
+
+        比较口径是折算到月（price_monthly），因为不同家按不同周期报价。
+        展示时会同时给出原始价与折算月价，避免拿 $24/yr 跟 $2/mo 直接比大小。
+        """
+        if o.get("price_monthly") is None:
+            return []
+        cur = o.get("currency", "")
+        p = o["price_monthly"]
+        band = [x for x in self.priced_offers()
+                if x.get("currency", "") == cur
+                and x.get("_slug") != o.get("_slug")
+                and x.get("provider_slug") != o.get("provider_slug")
+                and abs(x["price_monthly"] - p) <= max(1.0, p * 0.35)]
+        band.sort(key=lambda x: abs(x["price_monthly"] - p))
+        return band[:limit]
+
+    def peer_line(self, x: dict[str, Any]) -> str:
+        """一条同行报价，标明原始计价周期；折算月价与原始周期不同才额外标出来。"""
+        raw_label = f"{money(x)}{per(x)}"
+        monthly = x.get("price_monthly")
+        period = x.get("period")
+        if period == "month" or monthly is None:
+            money_label = raw_label
+        else:
+            money_label = f"{raw_label} (about {monthly:g} {x.get('currency','')}/mo)"
+        return (
+            f'<li><a href="{esc(rel(self.deal_path(x)))}">{esc(short_title(x["title"], 70))}</a> '
+            f'\u2014 {esc(x["provider"])}, {esc(money_label)}</li>'
+        )
+
+    def bullets(self, lines: list[str]) -> str:
+        if not lines:
+            return ""
+        items = "".join(f"<li>{esc(t)}</li>" for t in lines)
+        return f"<ul>{items}</ul>"
+
+    def price_stats(self) -> dict[str, Any]:
+        """全站价格分布的真实统计。没有价格就返回空 dict，不编数字。"""
+        pool = self.priced_offers()
+        if not pool:
+            return {}
+        by_cur: dict[str, list[float]] = {}
+        for o in pool:
+            by_cur.setdefault(o.get("currency", ""), []).append(o["price_monthly"])
+        out: dict[str, Any] = {"total": len(pool), "by_currency": {}}
+        for cur, vals in by_cur.items():
+            vals = sorted(vals)
+            n = len(vals)
+            mid = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+            out["by_currency"][cur] = {
+                "n": n,
+                "min": vals[0],
+                "max": vals[-1],
+                "median": mid,
+            }
+        return out
+
+    def price_spread_note(self) -> str:
+        """把价格分布写成一句可复核的话，用于对比页/来源页补足正文。"""
+        st = self.price_stats()
+        if not st:
+            return ""
+        parts: list[str] = []
+        for cur, d in sorted(st["by_currency"].items()):
+            parts.append(
+                f"{d['n']} {cur} plans, from {d['min']:g} to {d['max']:g} per month "
+                f"(median {d['median']:g})"
+            )
+        return (
+            f"Across the {st['total']} priced plans tracked in this run, the spread is: "
+            + "; ".join(parts)
+            + ". Every one of those figures is computed from this site's own fetch results, "
+            "converted to a monthly basis where the provider bills annually."
+        )
+
+    def section(self, title: str, body: str) -> str:
+        if not body:
+            return ""
+        return f'<section class="deep"><h2>{esc(title)}</h2>{body}</section>'
+
+    def paras(self, lines: list[str]) -> str:
+        return "".join(f"<p>{esc(t)}</p>" for t in lines if t)
 
     def card(self, o: dict[str, Any]) -> str:
         expired = is_expired(o, self.now)
@@ -521,6 +675,44 @@ class Builder:
                 f"Prices read from {p.name}'s own public page. Entry price: {lead}."
             )
 
+            # ---- 正文：这家在本站的真实横向位置 + 通用选购要点 ----
+            ranked = sorted(
+                [o for o in offers if o.get("price_monthly") is not None],
+                key=lambda x: x["price_monthly"],
+            )
+            answer_parts: list[str] = [
+                f"This page tracks {len(offers)} {self.noun} plan"
+                f"{'s' if len(offers) != 1 else ''} published by {p.name} on its own public pricing page."
+            ]
+            if ranked:
+                cheapest = ranked[0]
+                answer_parts[0] = (
+                    f"Prices here run from {money(cheapest)}{per(cheapest)} upward, across "
+                    f"{len(ranked)} priced plan{'s' if len(ranked) != 1 else ''} read from "
+                    f"{p.name}'s own public pricing page."
+                )
+                # 本站独家：这家最便宜的方案在整个站里排第几
+                rk = self.rank_of(cheapest)
+                if rk:
+                    i, n = rk
+                    cur = cheapest.get("currency", "")
+                    answer_parts.append(
+                        f"Its cheapest plan sits at position {i} of {n} priced {cur} offers tracked "
+                        f"across every provider on this site."
+                    )
+                answer_parts.append(self.cfg.tier_text(cheapest.get("price_monthly")))
+            else:
+                answer_parts.append(
+                    f"{p.name} does not publish a machine-readable price on the page this site reads, "
+                    f"so no price is shown rather than a guess."
+                )
+
+            verify_body = self.bullets(self.cfg.block("what_to_verify"))
+            criteria_body = self.bullets(self.cfg.block("choosing_criteria"))
+            traps_body = self.bullets(self.cfg.block("common_traps"))
+            suitable_body = self.bullets(self.cfg.block("suitable_for"))
+            how_body = self.paras(self.cfg.block("how_we_got_this"))
+
             content = render(
                 load_tpl("provider.html"),
                 {
@@ -534,7 +726,15 @@ class Builder:
                         f"Every offer below was read from {p.name}'s own public pricing page on "
                         f"{str(offers[0].get('fetched_at', ''))[:10]}. Nothing is estimated."
                     ),
+                    "ANSWER": self.paras([t for t in answer_parts if t]),
                     "STATS": stats,
+                    "SECTIONS": (
+                        self.section(f"What to check before buying a {self.noun} plan here", verify_body)
+                        + self.section("What actually matters when comparing these plans", criteria_body)
+                        + self.section("Common traps in this market", traps_body)
+                        + self.section("What this kind of server suits", suitable_body)
+                        + self.section("Where these numbers came from", how_body)
+                    ),
                     "CARDS": cards,
                     "SOURCE_URL": esc(p.source_url),
                 },
@@ -606,6 +806,48 @@ class Builder:
                 "Prices can change at any time \u2014 confirm on the provider's site before buying."
             )
 
+            # ---- 正文：第一屏直接答问题，再给可复核的依据 ----
+            # 先回答"这个价格意味着什么"（用配置词库的档位解读）
+            tier = self.cfg.tier_text(o.get("price_monthly"))
+            share = self.cheaper_share(o)
+
+            # 首屏答案段：把这条 offer 最该知道的结论放最前
+            answer_parts: list[str] = []
+            if o.get("price") is not None:
+                answer_parts.append(
+                    f"{o['provider']} lists this {self.noun} plan at {money(o)}{per(o)} as published on "
+                    f"its own page on {str(o.get('fetched_at',''))[:10]}."
+                )
+            else:
+                answer_parts.append(
+                    f"{o['provider']} does not publish a machine-readable price for this plan on its "
+                    f"pricing page, so no price is shown here rather than a guess."
+                )
+            if share:
+                answer_parts.append(share)
+            if tier:
+                answer_parts.append(tier)
+
+            # 后续正文块
+            verify_body = self.bullets(self.cfg.block("what_to_verify"))
+            criteria_body = self.bullets(self.cfg.block("choosing_criteria"))
+            traps_body = self.bullets(self.cfg.block("common_traps"))
+            suitable_body = self.bullets(self.cfg.block("suitable_for"))
+            how_body = self.paras(self.cfg.block("how_we_got_this"))
+            affil_body = self.paras(self.cfg.block("affiliate_note"))
+
+            # 同价位其他家 —— 也是本站独有的横向数据
+            peer_rows = self.peers(o, 3)
+            peer_body = ""
+            if peer_rows:
+                items = "".join(self.peer_line(x) for x in peer_rows)
+                note = (
+                    "<p class=\"muted\">Compared by price converted to a monthly figure, because "
+                    "providers bill on different cycles. Where the original billing period is not "
+                    "monthly, the converted figure is shown alongside it.</p>"
+                )
+                peer_body = f"<ul>{items}</ul>{note}"
+
             content = render(
                 load_tpl("deal.html"),
                 {
@@ -624,9 +866,19 @@ class Builder:
                         f"{o['provider']} \u00b7 read from the provider's public page on "
                         f"{str(o.get('fetched_at', ''))[:10]}"
                     ),
+                    "ANSWER": self.paras(answer_parts),
+                    "FACTS": facts_html,
                     "PROVIDER": esc(o["provider"]),
                     "OFFER_URL": esc(o.get("offer_url") or o.get("source_url", "")),
-                    "FACTS": facts_html,
+                    "SECTIONS": (
+                        self.section("Before you order: three things worth checking yourself", verify_body)
+                        + self.section("What actually matters when comparing these plans", criteria_body)
+                        + self.section("Common traps in this price band", traps_body)
+                        + self.section("Nearby price points from other providers", peer_body)
+                        + self.section("What this kind of server suits", suitable_body)
+                        + self.section("Where this number came from", how_body)
+                        + self.section("Affiliate disclosure", affil_body)
+                    ),
                     "CARDS": cards or '<p class="muted">No other offers tracked for this provider on this run.</p>',
                     "PROVENANCE": esc(provenance),
                 },
@@ -702,6 +954,40 @@ class Builder:
                     "Ranking is by published price only. A cheaper entry price does not mean better hardware, "
                     "support, or network \u2014 read the provider's own specification before buying."
                 ),
+                "SECTIONS": (
+                    self.section(
+                        "How to read this table",
+                        self.paras(
+                            [
+                                "Each row is one provider, ranked by the lowest monthly-equivalent price this "
+                                "site could read from that provider's own public pricing page on the date shown "
+                                "at the bottom of this page. The two price columns are the cheapest monthly plan "
+                                "and the cheapest annual plan that provider publishes.",
+                                self.price_spread_note(),
+                                "An entry price tells you what the cheapest door costs, nothing more. It does not "
+                                "tell you how much traffic is included, what a public IPv4 address costs on top, "
+                                "or what the price becomes at renewal. Those are the numbers that decide the real "
+                                "cost, and they are worth checking on the provider's page before you buy.",
+                            ]
+                        ),
+                    )
+                    + self.section(
+                        "Why the ranking can change between runs",
+                        self.paras(
+                            [
+                                "This table is rebuilt from a fresh fetch, so it moves whenever a provider changes "
+                                "a published price, adds a plan, or stops listing one. A provider that drops out of "
+                                "the table did not necessarily get more expensive \u2014 it may simply have stopped "
+                                "publishing a machine-readable price, in which case it appears on the "
+                                "<a href=\""
+                                + esc(rel("sources.html"))
+                                + "\">sources page</a> with the reason.",
+                            ]
+                        ),
+                    )
+                    + self.section("What actually matters when comparing these plans", self.bullets(self.cfg.block("choosing_criteria")))
+                    + self.section("Common traps in this market", self.bullets(self.cfg.block("common_traps")))
+                ),
             },
         )
         self.emit(
@@ -757,6 +1043,41 @@ class Builder:
                 "NOTE": esc(
                     "We read only public pages, respect robots.txt, and do not bypass bot protection or log in anywhere. "
                     "Where a provider returns no machine-readable price, the offer is shown without a price rather than estimated."
+                ),
+                "SECTIONS": (
+                    self.section(
+                        "What each column means",
+                        self.paras(
+                            [
+                                "<strong>HTTP</strong> is the status code the provider's server returned to this "
+                                "site's fetch. <strong>Result</strong> is what happened to that response: whether a "
+                                "price was extracted, or why it was not. <strong>Offers</strong> is how many priced "
+                                "plans were pulled out of that one page. <strong>Extraction</strong> records which "
+                                "method worked \u2014 structured pricing data embedded in the page, or a price "
+                                "pattern in the page text.",
+                                self.price_spread_note(),
+                                "Rows with no price are kept in the table on purpose. A provider that published "
+                                "nothing is a different fact from a provider this site failed to read, and hiding "
+                                "either one would make the rest of the table look more complete than it is.",
+                            ]
+                        ),
+                    )
+                    + self.section(
+                        "How this site reads a page",
+                        self.paras(
+                            [
+                                "A scheduled job requests each provider's public pricing page with a normal "
+                                "user-agent, at a polite interval, and keeps the raw response. It does not log in, "
+                                "does not solve challenges, and does not touch anything behind a login. If a page "
+                                "returns a refusal, that refusal is recorded as-is rather than worked around.",
+                                "Prices are only taken when they can be tied to a specific published plan on "
+                                "the provider's own page, and every offer keeps the exact source URL it came "
+                                "from. Nothing is averaged across providers, and nothing is inferred from a "
+                                "sibling plan.",
+                            ]
+                        ),
+                    )
+                    + self.section("Where these numbers came from", self.paras(self.cfg.block("how_we_got_this")))
                 ),
             },
         )
@@ -820,10 +1141,38 @@ class Builder:
     def build_about(self) -> None:
         brand = esc(self.cfg.brand)
         sources = esc(rel("sources.html"))
+        contact = esc(rel("contact.html"))
+
+        # 「谁做的这个站」—— 配置里没写运营者就整节不出现，不编身份
+        who = ""
+        if self.cfg.operator:
+            run_as = self.cfg.run_as.strip()
+            first = (
+                f"{brand} is run by {esc(self.cfg.operator)}, {esc(run_as)}."
+                if run_as
+                else f"{brand} is run by {esc(self.cfg.operator)}."
+            )
+            who = (
+                "<h2>Who runs this</h2>"
+                + self.paras(
+                    [
+                        first,
+                        "It is not a hosting company and does not sell hosting. It has no editorial "
+                        "team, no sponsored content, and no relationship with the providers beyond "
+                        "reading their public pricing pages and, where one exists, an affiliate link.",
+                    ]
+                )
+                + f'<p>Corrections, complaints and takedown requests all go to the same place: the '
+                f'<a href="{contact}">contact page</a>. If a price here is wrong, that is a bug, '
+                "and it gets fixed by fixing the extraction, not by editing the number.</p>"
+            )
+
         body = (
             f"<p>{brand} is an independent {esc(self.noun)} price radar. It reads the prices that "
             "hosting providers publish on their own public pricing pages, and rebuilds this site "
             "from them every six hours.</p>"
+
+            + who +
 
             "<h2>How it works</h2>"
             "<p>A scheduled job fetches each provider's public pricing page, extracts the prices "
@@ -876,7 +1225,17 @@ class Builder:
                 "site.ilang 的 ::STATE{@SITE ...} 里没有 contact_email，"
                 "拒绝生成 contact.html —— 联系方式不许留空或占位"
             )
-        mailto = f'<p><a href="mailto:{esc(email)}">{esc(email)}</a></p>'
+        # 邮箱给两种写法：可点链接 + 明文。
+        # 明文那行是必要的 —— Cloudflare 的邮箱保护会把 mailto: 改成一段 JS 才解得开的
+        # 混淆串，不执行 JS 的抓取（含部分审核工具）只能看到 "[email protected]"。
+        # 把 @ 写成实体、域名拆开，CF 的保护规则就不匹配，任何环境都能读到真实地址。
+        local, _, domain_part = email.partition("@")
+        plain = f"{esc(local)}&#64;{esc(domain_part)}" if domain_part else esc(email)
+        mailto = (
+            f'<p><a href="mailto:{esc(email)}">{esc(email)}</a></p>'
+            f'<p class="muted">If the link above does not open your mail client, the address is '
+            f"<strong>{plain}</strong>.</p>"
+        )
         sources = esc(rel("sources.html"))
         privacy = esc(rel("privacy.html"))
         body = (
@@ -958,6 +1317,31 @@ class Builder:
             "network's own privacy policy. What we can promise is that ad placement never changes "
             "which deals are listed or how they rank. Ranking is always by published price.</p>"
 
+            "<h3>Third-party vendors and advertising cookies</h3>"
+            "<p>Ads on this site are served by third-party advertising vendors. Those vendors may "
+            "use cookies or similar technologies to serve ads based on your prior visits to this "
+            "site or other sites. Third-party vendors and ad networks may also use advertising "
+            "identifiers to measure how ads perform.</p>"
+            "<p>You can opt out of personalised advertising from participating vendors through the "
+            "industry opt-out pages below. Opting out does not remove ads from the page &mdash; it "
+            "means the ads you see are no longer tailored using that data:</p>"
+            "<ul>"
+            '<li><a href="https://www.aboutads.info/choices/" rel="nofollow noopener" '
+            'target="_blank">aboutads.info/choices</a> (Digital Advertising Alliance)</li>'
+            '<li><a href="https://www.youronlinechoices.com/" rel="nofollow noopener" '
+            'target="_blank">youronlinechoices.com</a> (European Interactive Digital Advertising '
+            "Alliance)</li>"
+            '<li><a href="https://optout.networkadvertising.org/" rel="nofollow noopener" '
+            'target="_blank">optout.networkadvertising.org</a> (Network Advertising Initiative)</li>'
+            "</ul>"
+            "<p>This site does not control those opt-out tools and cannot act on your behalf "
+            "through them. Browser-level controls also work: most browsers let you block or clear "
+            "third-party cookies entirely in their settings.</p>"
+            "<p><strong>Which networks are active right now.</strong> No advertising network is "
+            "currently serving ads on this site. The ad code is added by hand, after a network "
+            "approves the site, and the network's identity is named here as soon as that happens. "
+            "Until then, this page describes what will apply rather than what is running.</p>"
+
             "<h2>What the hosting provider sees</h2>"
             "<p>This site is a set of static files served by Cloudflare. Like any web host or "
             "content delivery network, Cloudflare processes request data &mdash; such as your IP "
@@ -982,11 +1366,24 @@ class Builder:
             "<ul>"
             "<li>We do not sell, rent, or trade personal data.</li>"
             "<li>We do not build visitor profiles.</li>"
-            "<li>We do not knowingly collect data from children.</li>"
+            "<li>We do not knowingly collect data from children under 13. If you believe a child "
+            "has provided data to this site, use the contact page and it will be removed.</li>"
             "</ul>"
 
+            "<h2>Your agreement to this policy</h2>"
+            "<p>By using this site, you agree to this policy. If you do not agree with it, the "
+            "appropriate step is to stop using the site. Because this site sets no cookies of its "
+            "own and runs no first-party analytics, there is no account to close and no profile to "
+            "delete &mdash; there is nothing held about you to remove. If a third-party ad network "
+            "has set a cookie in your browser, the opt-out links above and your browser's own "
+            "settings are the way to remove it.</p>"
+
             "<h2>Changes to this policy</h2>"
-            "<p>If this policy changes, the date at the top of this page changes with it.</p>"
+            "<p>If this policy changes, the date at the top of this page changes with it. Because "
+            "the site's behaviour is fixed by its build, this page describes what the site actually "
+            "does at that date rather than what it is expected to do later. Continuing to use the "
+            "site after a change means you accept the updated version; if you want to check what "
+            "changed, the site's source history is public.</p>"
         )
         self.prose_page(
             path="privacy.html",

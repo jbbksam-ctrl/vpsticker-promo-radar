@@ -1,0 +1,106 @@
+==========================================================================
+线上实测：逐页状态码
+==========================================================================
+  200  https://vpsticker.com/404
+  200  https://vpsticker.com/about
+  200  https://vpsticker.com/compare
+  200  https://vpsticker.com/contact
+  200  https://vpsticker.com/deal/buyvm-buyvm-kvm-slices-dedicated-server-performance-with-100-ssd-s-2
+  200  https://vpsticker.com/deal/buyvm-buyvm-kvm-slices-dedicated-server-performance-with-100-ssd-stora
+  200  https://vpsticker.com/deal/cloudzy-cloudzy-independent-cloud-for-builders-since-2008-from-2-48-mo
+  200  https://vpsticker.com/deal/cloudzy-cloudzy-independent-cloud-for-builders-since-2008-from-30-yr-3
+  200  https://vpsticker.com/deal/digitalocean-budget-friendly-cloud-server-pricing-digitalocean-from-4-
+  200  https://vpsticker.com/deal/dreamhost-vps-hosting-with-full-root-access-dreamhost-from-8-99-mo-8-9
+  200  https://vpsticker.com/deal/greengeeks-16-gb-vps-179-95-month
+  200  https://vpsticker.com/deal/greengeeks-4-gb-vps-69-95-month
+  200  https://vpsticker.com/deal/greengeeks-8-gb-vps-129-95-month
+  200  https://vpsticker.com/deal/hostinger-kvm-1-6-49-month
+  200  https://vpsticker.com/deal/hostinger-kvm-2-8-99-month
+  200  https://vpsticker.com/deal/hostinger-kvm-4-12-99-month
+  200  https://vpsticker.com/deal/hostinger-kvm-8-25-99-month
+  200  https://vpsticker.com/deal/hostwinds-linux-vps-hosting-ssd-virtual-private-servers-hostwinds-from
+  200  https://vpsticker.com/deal/inmotion-hosting-vps-12-vcpu-31-99-month
+  200  https://vpsticker.com/deal/inmotion-hosting-vps-16-vcpu-39-99-month
+  200  https://vpsticker.com/deal/inmotion-hosting-vps-2-vcpu-7-99-month
+  200  https://vpsticker.com/deal/inmotion-hosting-vps-4-vcpu-9-99-month
+  200  https://vpsticker.com/deal/inmotion-hosting-vps-8-vcpu-19-99-month
+  200  https://vpsticker.com/deal/inmotion-hosting-vps-hosting-7-72-month
+  200  https://vpsticker.com/deal/ionos-vps-2-0-month
+  200  https://vpsticker.com/deal/ovhcloud-vps-from-1-4-mo-1-4-month
+  200  https://vpsticker.com/deal/scalahosting-cloud-hosting-services-that-adapt-to-your-needs-scalahost
+  200  https://vpsticker.com/deal/ssd-nodes-ssd-nodes-5-5-month
+  200  https://vpsticker.com/deal/transip-vps-a-virtual-private-server-for-every-project-transip-from-12
+  200  https://vpsticker.com/deal/ultahost-vps-hosting-4-8-month
+  200  https://vpsticker.com/deal/verpex-vps-d16-40-0-month
+  200  https://vpsticker.com/deal/verpex-vps-d32-55-0-month
+  200  https://vpsticker.com/deal/verpex-vps-d4-10-0-month
+  200  https://vpsticker.com/deal/verpex-vps-d8-20-0-month
+  200  https://vpsticker.com/
+  200  https://vpsticker.com/privacy
+  200  https://vpsticker.com/provider/buyvm
+  200  https://vpsticker.com/provider/cloudzy
+  200  https://vpsticker.com/provider/digitalocean
+  200  https://vpsticker.com/provider/dreamhost
+  200  https://vpsticker.com/provider/greengeeks
+  200  https://vpsticker.com/provider/hostinger
+  200  https://vpsticker.com/provider/hostwinds
+  200  https://vpsticker.com/provider/inmotion-hosting
+  200  https://vpsticker.com/provider/ionos
+  200  https://vpsticker.com/provider/ovhcloud
+  200  https://vpsticker.com/provider/scalahosting
+  200  https://vpsticker.com/provider/ssd-nodes
+  200  https://vpsticker.com/provider/transip
+  200  https://vpsticker.com/provider/ultahost
+  200  https://vpsticker.com/provider/verpex
+  200  https://vpsticker.com/sources
+
+页面总数 52，非 200 的 0 个
+
+==========================================================================
+线上实测：站内链接
+==========================================================================
+站内唯一 URL 数（含被引用的资源）：52
+非 200 的：1
+  !! 404  https://vpsticker.com/cdn-cgi/l/email-protection#364557585e43070407050e765943425a59595d1855595b
+
+==========================================================================
+外链可达性（信息性，不修）
+==========================================================================
+  200  https://bill.ultahost.com/cart.php?a=add&pid=118
+  200  https://buyvm.net/kvm-dedicated-server-slices/
+  200  https://cloudzy.com/
+  200  https://cloudzy.com/vps-hosting/
+  200  https://optout.networkadvertising.org/
+  200  https://ultahost.com/vps-hosting
+  200  https://verpex.com/vps-hosting
+  200  https://verpex.com/vps-hosting#Plans
+  429  https://www.aboutads.info/choices/
+  200  https://www.cloudflare.com/privacypolicy/
+  200  https://www.digitalocean.com/pricing
+  200  https://www.dreamhost.com/hosting/vps/
+  200  https://www.greengeeks.com/vps-hosting
+  200  https://www.greengeeks.com/vps-hosting/#16gb
+  200  https://www.greengeeks.com/vps-hosting/#4gb
+  200  https://www.greengeeks.com/vps-hosting/#8gb
+  200  https://www.hostinger.com/vps-hosting
+  200  https://www.hostwinds.com/vps/
+  200  https://www.hostwinds.com/vps/linux
+  403  https://www.inmotionhosting.com/vps-hosting
+  200  https://www.ionos.com/servers/vps
+  200  https://www.ovhcloud.com/en/vps/
+  200  https://www.scalahosting.com/
+  200  https://www.ssdnodes.com/pricing/
+  200  https://www.transip.eu/vps/
+  200  https://www.youronlinechoices.com/
+
+==========================================================================
+线上正文厚度抽样（验证部署的是新版）
+==========================================================================
+    855 words   deal/ionos-vps-2-0-month.html
+    402 words   about.html
+    867 words   privacy.html
+    703 words   provider/hostinger.html
+    662 words   compare.html
+    544 words   sources.html
+    170 words   contact.html
+

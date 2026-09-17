@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 CONFIG_REL_PATH = Path(".ilang") / "site.ilang"
+CONTENT_REL_PATH = Path(".ilang") / "content.ilang"
 
 _HEADER_RE = re.compile(r"\[([A-Za-z_]+):([^\]]*)\]")
 _DIRECTIVE_RE = re.compile(r"^::([A-Z]+)\{(.*)\}\s*$")
@@ -54,6 +55,9 @@ class SiteConfig:
     modules: dict[str, dict[str, Any]] = field(default_factory=dict)
     rules: list[str] = field(default_factory=list)
     boundaries: list[str] = field(default_factory=list)
+    # 页面正文词库（来自 .ilang/content.ilang 的 ::BLOCK）
+    # 结构：{ block_name: {"title": str, "lines": [str, ...]} }
+    blocks: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     # ---- 由 modules 派生 ----
     @property
@@ -143,6 +147,16 @@ class SiteConfig:
         return self.get("contact_email").strip()
 
     @property
+    def operator(self) -> str:
+        """谁在运营这个站。关于页要用，配置里没写就返回空串（关于页会跳过那一节）。"""
+        return self.get("operator").strip()
+
+    @property
+    def run_as(self) -> str:
+        """运营方式的补充说明（如「副业项目」），可为空。"""
+        return self.get("run_as").strip()
+
+    @property
     def per_page(self) -> int:
         try:
             return int(self.page.get("per_page", "24"))
@@ -152,6 +166,42 @@ class SiteConfig:
     @property
     def sort(self) -> str:
         return self.page.get("sort", "price_asc")
+
+    # ---- 正文词库 ----
+
+    def block(self, name: str) -> list[str]:
+        """取一个内容块的正文行。取不到就返回空列表，由调用方决定怎么降级。"""
+        entry = self.blocks.get(name)
+        if not entry:
+            return []
+        return list(entry.get("lines", []))
+
+    def block_title(self, name: str, default: str = "") -> str:
+        entry = self.blocks.get(name)
+        return entry.get("title", default) if entry else default
+
+    def tier_text(self, price: float | None) -> str:
+        """按价格取一档「这个价位意味着什么」的解读。
+
+        what_price_means 的行格式是「上限 | 一句话」，取第一个 >= price 的上限。
+        价格缺失或整块缺失时返回空串 —— 不编。
+        """
+        if price is None:
+            return ""
+        tiers: list[tuple[float, str]] = []
+        for line in self.block("what_price_means"):
+            head, sep, text = line.partition("|")
+            if not sep:
+                continue
+            try:
+                cap = float(head.strip())
+            except ValueError:
+                continue
+            tiers.append((cap, text.strip()))
+        for cap, text in sorted(tiers):
+            if price <= cap:
+                return text
+        return tiers[-1][1] if tiers else ""
 
 
 def _kv_lines(lines: list[str]) -> dict[str, str]:
@@ -172,17 +222,56 @@ def slugify(text: str) -> str:
 
 
 def _parse_state(body: str) -> dict[str, str]:
-    """::STATE{@SITE, brand:x, niche:y} -> {'brand':'x','niche':'y'}"""
+    """::STATE{@SITE, brand:x, niche:y} -> {'brand':'x','niche':'y'}
+
+    值里含逗号会打断按逗号切分的逻辑，所以允许用 | 再分一组键值对：
+    ::STATE{@SITE, operator:一个独立运营者|run_as:副业项目}
+    """
     out: dict[str, str] = {}
-    for chunk in body.split(","):
-        chunk = chunk.strip()
-        if not chunk or chunk.startswith("@"):
-            continue
-        key, sep, value = chunk.partition(":")
-        if not sep:
-            continue
-        out[key.strip()] = value.strip()
+    for group in body.split("|"):
+        for chunk in group.split(","):
+            chunk = chunk.strip()
+            if not chunk or chunk.startswith("@"):
+                continue
+            key, sep, value = chunk.partition(":")
+            if not sep:
+                continue
+            out[key.strip()] = value.strip()
     return out
+
+
+def _load_content(cfg: SiteConfig) -> None:
+    """把 .ilang/content.ilang 的 ::BLOCK 读进 cfg.blocks。
+
+    文件不存在就静默跳过 —— 正文词库是可选增强，缺了页面照常渲染，只是没有那些段落。
+    """
+    path = cfg.path.parent / "content.ilang"
+    if not path.exists():
+        return
+    raw = path.read_text(encoding="utf-8").splitlines()
+    current: str | None = None
+    for line in raw:
+        stripped = line.strip()
+        if not stripped or stripped.startswith(";;"):
+            continue
+        m = _DIRECTIVE_RE.match(stripped)
+        if m and m.group(1) == "BLOCK":
+            name_part, _, meta = m.group(2).partition("|")
+            name = name_part.strip()
+            entry: dict[str, Any] = {"lines": []}
+            for pair in meta.split("|"):
+                k, sep, v = pair.partition(":")
+                if sep:
+                    entry[k.strip()] = v.strip()
+            cfg.blocks[name] = entry
+            current = name
+            continue
+        if m:
+            # 其他指令（STATE/RULE/BOUNDARY）不影响正文块
+            current = None
+            continue
+        if current:
+            cfg.blocks[current]["lines"].append(stripped)
 
 
 def load(path: Path | str | None = None) -> SiteConfig:
@@ -239,6 +328,7 @@ def load(path: Path | str | None = None) -> SiteConfig:
     if not cfg.providers:
         raise ValueError(f"{cfg_path} 里没有解析到任何厂商，PROVIDERS 模块为空或格式不对")
 
+    _load_content(cfg)
     return cfg
 
 

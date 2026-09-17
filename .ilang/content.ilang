@@ -1,0 +1,46 @@
+ILANG
+[TYPE:content][PROJECT:vpsticker][LANG:en]
+;; 详情页/厂商页的正文内容词库。
+;; 这里是"通用选购知识"部分 —— 从公开的 VPS 选购方法论提炼，属于行业通行做法，
+;; 不冒充本站实测。真正独家的数字由 build.py 用本站 data/offers.json 现算。
+;; 改文案只改这个文件，不要动 build.py。
+
+::BLOCK{what_price_means|title:价格意味着什么 按价位档给一句解读}
+  ;; 格式: 上限USD | 一句话。取第一个 >= 实际价格的档。
+  3 | At this price point you are looking at the entry tier: shared vCPU, small RAM, and a monthly traffic allowance you should check before committing. It suits a single small site, a test box, or a lightweight service — not a busy production workload.
+  8 | This sits in the mainstream band. Expect enough headroom for a personal site or a light app with caching in front of it, and a provider that treats renewal pricing as a normal part of the product rather than a first-year lure.
+  20 | This is the mid tier. You are paying for either more resources, better network routing, or both. Worth it if real visitors depend on the box; overkill for a hobby project.
+  45 | This is upper-mid. At this level the differentiator is almost always network quality and support, not raw CPU. Confirm what you are actually buying before paying for it.
+  90 | This is a premium listing. At this price the plan usually bundles more cores and RAM than a small site needs, and the honest question is whether you are buying capacity or buying a bigger number.
+  1000000 | This is a top-of-range listing. Listings this far above the entry tier are almost never about raw price-per-core — they are sized for real concurrent load, and they should be judged against what you actually need to serve.
+
+::BLOCK{what_to_verify|title:下单前必须自己确认的三件事}
+  ;; 全部是可执行动作，不是形容词
+  Run a latency and packet-loss check against the provider's test IP from where your actual visitors are — not from where you are. A route that looks fine from your desk can collapse on a different carrier.
+  Re-check the same measurement during the provider's evening peak. Averages taken at midday hide exactly the congestion you are trying to avoid.
+  Read the renewal price, not just the first-term price, and add up two years of it. A headline number that only applies to the first billing cycle is not the number you will be paying.
+
+::BLOCK{choosing_criteria|title:挑选时按这个顺序看 不要先看配置}
+  Decide what the server is for before comparing specs. A box that only runs a scheduled job has completely different needs from one serving pages to visitors.
+  Check the traffic allowance and what overage costs, before you check core count. Running out of monthly transfer is a harder failure than running out of CPU.
+  Confirm whether the provider charges separately for a public IPv4 address, snapshots, or a data disk. These routinely change the real monthly cost.
+  Verify the upgrade, downgrade, migration and refund rules in writing. Being able to upgrade does not imply you can downgrade later.
+  Treat a snapshot as a rollback convenience, not a backup. If the instance is destroyed and the snapshot goes with it, you did not have a backup.
+
+::BLOCK{common_traps|title:常见的几个坑}
+  A low first-term price that reverts to a much higher renewal price is the single most common surprise. Record both numbers before you buy.
+  Peak bandwidth and sustained throughput are different things. A large port number can coexist with a shared link, a monthly cap, or throttling after you exceed the allowance.
+  Two plans with identical core and RAM counts can perform very differently depending on CPU scheduling, disk latency, and how loaded the neighbouring tenants are. A spec sheet does not settle this.
+  Cheap annual prepay is how providers lock in customers, not a favour to you. On a provider you have not used before, start with the shortest term available.
+
+::BLOCK{suitable_for|title:适合什么 不适合什么}
+  Suitable: a personal website, an API endpoint, a webhook receiver, a scheduled automation job, or a light monitoring service.
+  Not suitable: bulk media storage, a NAS replacement, continuous video transcoding, or GPU inference. A general-purpose VPS is the wrong resource type for those, and no amount of extra cores fixes it.
+
+::BLOCK{how_we_got_this|title:这条数字怎么来的}
+  The price above was read mechanically from the provider's own public page at the timestamp shown. It was extracted by matching the page's structured pricing data or a price pattern in the page text, and the exact source URL is listed above so you can check it yourself.
+  Nothing on this page is estimated, averaged, or back-filled. Where the provider did not publish a machine-readable price, no price is shown rather than a guess.
+  Ranking on this site is by published price only. No provider can pay to move up, and no listing is removed for commercial reasons.
+
+::BLOCK{affiliate_note|title:联盟披露}
+  Some outbound links on this site may be affiliate links. If you sign up through one, this site may earn a commission at no additional cost to you. Affiliate status does not affect which providers are listed, where they rank, or what price is displayed — the numbers are read from the providers' own pages either way.
