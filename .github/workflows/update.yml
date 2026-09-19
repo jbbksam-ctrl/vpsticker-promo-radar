@@ -34,12 +34,17 @@ jobs:
       - name: Build static site
         run: python build.py
 
+      # 公开数据集：dataset/ 是被第三方引用的那份（awesome-public-datasets 指向它）。
+      # 它必须跟 data/ 一起刷新，否则 README 上写的 6 小时更新频率是假的。
+      - name: Export public dataset
+        run: python dataset_export.py
+
       # 每次 commit 就是这个仓库自己的更新记录与年份。
-      - name: Commit refreshed data and site
+      - name: Commit refreshed data, site and dataset
         run: |
           git config user.name  "promo-radar-bot"
           git config user.email "promo-radar-bot@users.noreply.github.com"
-          git add -A data site
+          git add -A data site dataset
           if git diff --cached --quiet; then
             echo "本次没有变化，跳过提交。"
           else

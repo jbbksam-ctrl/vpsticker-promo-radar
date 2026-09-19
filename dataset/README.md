@@ -3,8 +3,8 @@
 Published monthly and annual prices for virtual private server (VPS) plans, read directly
 from the public pricing pages of 15 hosting providers.
 
-Snapshot date: **2026-09-17** (UTC `2026-09-17T06:24:49Z`)
-Offers: **30** across **15** providers
+Snapshot date: **2026-09-19** (UTC `2026-09-19T00:19:22Z`)
+Offers: **29** across **15** providers
 
 ## Files
 
@@ -45,9 +45,13 @@ Offers: **30** across **15** providers
 ## Regenerating
 
 ```bash
-python scraper.py   # refresh data/offers.json from the public pages
-python build.py     # rebuild site/
+python scraper.py        # refresh data/offers.json from the public pages
+python dataset_export.py # rebuild the files in this directory from that data
+python build.py          # rebuild site/
 ```
+
+`dataset_export.py` is deterministic: the same `data/offers.json` always produces
+byte-identical files here, so a re-run never changes a snapshot you have already cited.
 
 Standard library only — no API keys, no third-party packages, no inference at build time.
 
