@@ -7,7 +7,7 @@ Hostwinds,https://www.hostwinds.com/vps/,200,ok,regex,1,
 ScalaHosting,https://www.scalahosting.com/,200,ok,regex,1,
 GreenGeeks,https://www.greengeeks.com/vps-hosting,200,ok,jsonld:product,3,
 DreamHost,https://www.dreamhost.com/hosting/vps/,200,ok,regex,1,
-InMotion Hosting,https://www.inmotionhosting.com/vps-hosting,200,ok,jsonld:offer,6,
+InMotion Hosting,https://www.inmotionhosting.com/vps-hosting,200,ok,jsonld:offer,5,
 UltaHost,https://ultahost.com/vps-hosting,403,http_error,,0,HTTP 403
 Cloudzy,https://cloudzy.com/vps-hosting/,200,ok,regex,2,
 SSD Nodes,https://www.ssdnodes.com/pricing/,200,ok,jsonld:product,1,
