@@ -3,7 +3,7 @@ IONOS,https://www.ionos.com/servers/vps,200,ok,jsonld:product,1,
 Hostinger,https://www.hostinger.com/vps-hosting,200,ok,jsonld:product,4,
 OVHcloud,https://www.ovhcloud.com/en/vps/,200,ok,regex,1,
 DigitalOcean,https://www.digitalocean.com/pricing,200,ok,regex,1,
-Hostwinds,https://www.hostwinds.com/vps/,200,ok,regex,1,
+Hostwinds,https://www.hostwinds.com/vps/,,error,,0,RuntimeError: 抓取失败 https://www.hostwinds.com/vps/: <urlopen error [Errno -2] Name or service not known>
 ScalaHosting,https://www.scalahosting.com/,200,ok,regex,1,
 GreenGeeks,https://www.greengeeks.com/vps-hosting,200,ok,jsonld:product,3,
 DreamHost,https://www.dreamhost.com/hosting/vps/,200,ok,regex,1,
