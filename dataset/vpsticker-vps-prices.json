@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-22T12:18:06Z",
+  "generated_at": "2026-09-22T18:17:33Z",
   "brand": "vpsticker",
   "domain": "vpsticker.com",
   "locale": "en-US",
   "currency": "USD",
   "config_source": "site.ilang",
   "providers_configured": 15,
-  "offers_total": 27,
+  "offers_total": 28,
   "sources": [
     {
       "provider": "IONOS",
@@ -52,11 +52,11 @@
       "provider": "Hostwinds",
       "url": "https://www.hostwinds.com/vps/",
       "profile": "regex",
-      "http": 530,
-      "status": "http_error",
-      "extraction": null,
-      "offers": 0,
-      "note": "HTTP 530"
+      "http": 200,
+      "status": "ok",
+      "extraction": "regex",
+      "offers": 1,
+      "note": ""
     },
     {
       "provider": "ScalaHosting",
@@ -172,7 +172,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 0.5,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "OVHcloud",
@@ -186,7 +186,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 1.4,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "BuyVM",
@@ -200,7 +200,7 @@
       "currency": "USD",
       "period": "year",
       "price_monthly": 2.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "IONOS",
@@ -214,7 +214,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 2.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Cloudzy",
@@ -228,7 +228,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 2.48,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Cloudzy",
@@ -242,7 +242,7 @@
       "currency": "USD",
       "period": "year",
       "price_monthly": 2.5,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "ScalaHosting",
@@ -256,7 +256,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 2.95,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "DigitalOcean",
@@ -270,7 +270,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 4.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "SSD Nodes",
@@ -284,7 +284,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 5.5,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "DreamHost",
@@ -298,7 +298,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 5.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Hostinger",
@@ -313,7 +313,21 @@
       "period": "month",
       "price_monthly": 6.49,
       "valid_until": "2027-09-22",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
+    },
+    {
+      "provider": "Hostwinds",
+      "provider_slug": "hostwinds",
+      "provider_link": "https://www.hostwinds.com",
+      "title": "Linux VPS Hosting, SSD Virtual Private Servers | Hostwinds — from 7.14/mo",
+      "offer_url": "https://www.hostwinds.com/vps/linux",
+      "source_url": "https://www.hostwinds.com/vps/linux",
+      "extraction": "regex",
+      "price": 7.14,
+      "currency": "USD",
+      "period": "month",
+      "price_monthly": 7.14,
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "InMotion Hosting",
@@ -327,7 +341,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 7.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Hostinger",
@@ -342,7 +356,7 @@
       "period": "month",
       "price_monthly": 8.99,
       "valid_until": "2027-09-22",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "InMotion Hosting",
@@ -356,7 +370,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 9.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Verpex",
@@ -370,7 +384,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 10.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Hostinger",
@@ -385,7 +399,7 @@
       "period": "month",
       "price_monthly": 12.99,
       "valid_until": "2027-09-22",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "TransIP",
@@ -399,7 +413,7 @@
       "currency": "EUR",
       "period": "month",
       "price_monthly": 12.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "InMotion Hosting",
@@ -413,7 +427,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 19.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Verpex",
@@ -427,7 +441,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 20.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Hostinger",
@@ -442,7 +456,7 @@
       "period": "month",
       "price_monthly": 25.99,
       "valid_until": "2027-09-22",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "InMotion Hosting",
@@ -456,7 +470,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 31.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "InMotion Hosting",
@@ -470,7 +484,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 39.99,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Verpex",
@@ -484,7 +498,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 40.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "Verpex",
@@ -498,7 +512,7 @@
       "currency": "USD",
       "period": "month",
       "price_monthly": 55.0,
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "GreenGeeks",
@@ -513,7 +527,7 @@
       "period": "month",
       "price_monthly": 69.95,
       "valid_until": "2026-12-31",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "GreenGeeks",
@@ -528,7 +542,7 @@
       "period": "month",
       "price_monthly": 129.95,
       "valid_until": "2026-12-31",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     },
     {
       "provider": "GreenGeeks",
@@ -543,7 +557,7 @@
       "period": "month",
       "price_monthly": 179.95,
       "valid_until": "2026-12-31",
-      "fetched_at": "2026-09-22T12:18:06Z"
+      "fetched_at": "2026-09-22T18:17:33Z"
     }
   ]
 }
