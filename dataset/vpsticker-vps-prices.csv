@@ -1,29 +1,29 @@
 provider,title,price,currency,period,price_monthly,offer_url,source_url,extraction,fetched_at
-BuyVM,BuyVM - KVM Slices Dedicated Server Performance with 100% SSD Storage and DDoS Protection Available — from 0.5/mo,0.5,USD,month,0.5,https://buyvm.net/kvm-dedicated-server-slices/,https://buyvm.net/kvm-dedicated-server-slices/,regex,2026-09-26T12:17:01Z
-OVHcloud,VPS — from 1.4/mo,1.4,USD,month,1.4,https://www.ovhcloud.com/en/vps/,https://www.ovhcloud.com/en/vps/,regex,2026-09-26T12:17:01Z
-BuyVM,BuyVM - KVM Slices Dedicated Server Performance with 100% SSD Storage and DDoS Protection Available — from 24/yr,24.0,USD,year,2.0,https://buyvm.net/kvm-dedicated-server-slices/,https://buyvm.net/kvm-dedicated-server-slices/,regex,2026-09-26T12:17:01Z
-IONOS,VPS,2.0,USD,month,2.0,https://www.ionos.com/servers/vps,https://www.ionos.com/servers/vps,jsonld:product,2026-09-26T12:17:01Z
-Cloudzy,"Cloudzy. Independent Cloud for Builders, Since 2008 — from 2.48/mo",2.48,USD,month,2.48,https://cloudzy.com/,https://cloudzy.com/,regex,2026-09-26T12:17:01Z
-Cloudzy,"Cloudzy. Independent Cloud for Builders, Since 2008 — from 30/yr",30.0,USD,year,2.5,https://cloudzy.com/,https://cloudzy.com/,regex,2026-09-26T12:17:01Z
-ScalaHosting,Cloud Hosting Services That Adapt to Your Needs | ScalaHosting — from 2.95/mo,2.95,USD,month,2.95,https://www.scalahosting.com/,https://www.scalahosting.com/,regex,2026-09-26T12:17:01Z
-DigitalOcean,Budget-Friendly Cloud Server Pricing | DigitalOcean — from 4/mo,4.0,USD,month,4.0,https://www.digitalocean.com/pricing,https://www.digitalocean.com/pricing,regex,2026-09-26T12:17:01Z
-SSD Nodes,SSD Nodes,5.5,USD,month,5.5,https://www.ssdnodes.com/pricing/,https://www.ssdnodes.com/pricing/,jsonld:product,2026-09-26T12:17:01Z
-Hostinger,KVM 1,6.49,USD,month,6.49,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
-Hostwinds,"Linux VPS Hosting, SSD Virtual Private Servers | Hostwinds — from 7.14/mo",7.14,USD,month,7.14,https://www.hostwinds.com/vps/linux,https://www.hostwinds.com/vps/linux,regex,2026-09-26T12:17:01Z
-InMotion Hosting,VPS 2 vCPU,7.99,USD,month,7.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-DreamHost,VPS Hosting with Full Root Access | DreamHost — from 8.99/mo,8.99,USD,month,8.99,https://www.dreamhost.com/hosting/vps/,https://www.dreamhost.com/hosting/vps/,regex,2026-09-26T12:17:01Z
-Hostinger,KVM 2,8.99,USD,month,8.99,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
-InMotion Hosting,VPS 4 vCPU,9.99,USD,month,9.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-Verpex,VPS-D4,10.0,USD,month,10.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-Hostinger,KVM 4,12.99,USD,month,12.99,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
-TransIP,VPS - A Virtual Private Server for every project / TransIP — from 12.99/mo,12.99,EUR,month,12.99,https://www.transip.eu/vps/,https://www.transip.eu/vps/,regex,2026-09-26T12:17:01Z
-InMotion Hosting,VPS 8 vCPU,19.99,USD,month,19.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-Verpex,VPS-D8,20.0,USD,month,20.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-Hostinger,KVM 8,25.99,USD,month,25.99,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
-InMotion Hosting,VPS 12 vCPU,31.99,USD,month,31.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-InMotion Hosting,VPS 16 vCPU,39.99,USD,month,39.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-Verpex,VPS-D16,40.0,USD,month,40.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-Verpex,VPS-D32,55.0,USD,month,55.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T12:17:01Z
-GreenGeeks,4 GB VPS,69.95,USD,month,69.95,https://www.greengeeks.com/vps-hosting/#4gb,https://www.greengeeks.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
-GreenGeeks,8 GB VPS,129.95,USD,month,129.95,https://www.greengeeks.com/vps-hosting/#8gb,https://www.greengeeks.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
-GreenGeeks,16 GB VPS,179.95,USD,month,179.95,https://www.greengeeks.com/vps-hosting/#16gb,https://www.greengeeks.com/vps-hosting,jsonld:product,2026-09-26T12:17:01Z
+BuyVM,BuyVM - KVM Slices Dedicated Server Performance with 100% SSD Storage and DDoS Protection Available — from 0.5/mo,0.5,USD,month,0.5,https://buyvm.net/kvm-dedicated-server-slices/,https://buyvm.net/kvm-dedicated-server-slices/,regex,2026-09-26T18:15:43Z
+OVHcloud,VPS — from 1.4/mo,1.4,USD,month,1.4,https://www.ovhcloud.com/en/vps/,https://www.ovhcloud.com/en/vps/,regex,2026-09-26T18:15:43Z
+BuyVM,BuyVM - KVM Slices Dedicated Server Performance with 100% SSD Storage and DDoS Protection Available — from 24/yr,24.0,USD,year,2.0,https://buyvm.net/kvm-dedicated-server-slices/,https://buyvm.net/kvm-dedicated-server-slices/,regex,2026-09-26T18:15:43Z
+IONOS,VPS,2.0,USD,month,2.0,https://www.ionos.com/servers/vps,https://www.ionos.com/servers/vps,jsonld:product,2026-09-26T18:15:43Z
+Cloudzy,"Cloudzy. Independent Cloud for Builders, Since 2008 — from 2.48/mo",2.48,USD,month,2.48,https://cloudzy.com/,https://cloudzy.com/,regex,2026-09-26T18:15:43Z
+Cloudzy,"Cloudzy. Independent Cloud for Builders, Since 2008 — from 30/yr",30.0,USD,year,2.5,https://cloudzy.com/,https://cloudzy.com/,regex,2026-09-26T18:15:43Z
+ScalaHosting,Cloud Hosting Services That Adapt to Your Needs | ScalaHosting — from 2.95/mo,2.95,USD,month,2.95,https://www.scalahosting.com/,https://www.scalahosting.com/,regex,2026-09-26T18:15:43Z
+DigitalOcean,Budget-Friendly Cloud Server Pricing | DigitalOcean — from 4/mo,4.0,USD,month,4.0,https://www.digitalocean.com/pricing,https://www.digitalocean.com/pricing,regex,2026-09-26T18:15:43Z
+SSD Nodes,SSD Nodes,5.5,USD,month,5.5,https://www.ssdnodes.com/pricing/,https://www.ssdnodes.com/pricing/,jsonld:product,2026-09-26T18:15:43Z
+Hostinger,KVM 1,6.49,USD,month,6.49,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
+Hostwinds,"Linux VPS Hosting, SSD Virtual Private Servers | Hostwinds — from 7.14/mo",7.14,USD,month,7.14,https://www.hostwinds.com/vps/linux,https://www.hostwinds.com/vps/linux,regex,2026-09-26T18:15:43Z
+InMotion Hosting,VPS 2 vCPU,7.99,USD,month,7.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+DreamHost,VPS Hosting with Full Root Access | DreamHost — from 8.99/mo,8.99,USD,month,8.99,https://www.dreamhost.com/hosting/vps/,https://www.dreamhost.com/hosting/vps/,regex,2026-09-26T18:15:43Z
+Hostinger,KVM 2,8.99,USD,month,8.99,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
+InMotion Hosting,VPS 4 vCPU,9.99,USD,month,9.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+Verpex,VPS-D4,10.0,USD,month,10.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+Hostinger,KVM 4,12.99,USD,month,12.99,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
+TransIP,VPS - A Virtual Private Server for every project / TransIP — from 12.99/mo,12.99,EUR,month,12.99,https://www.transip.eu/vps/,https://www.transip.eu/vps/,regex,2026-09-26T18:15:43Z
+InMotion Hosting,VPS 8 vCPU,19.99,USD,month,19.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+Verpex,VPS-D8,20.0,USD,month,20.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+Hostinger,KVM 8,25.99,USD,month,25.99,https://www.hostinger.com/vps-hosting,https://www.hostinger.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
+InMotion Hosting,VPS 12 vCPU,31.99,USD,month,31.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+InMotion Hosting,VPS 16 vCPU,39.99,USD,month,39.99,https://www.inmotionhosting.com/vps-hosting,https://www.inmotionhosting.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+Verpex,VPS-D16,40.0,USD,month,40.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+Verpex,VPS-D32,55.0,USD,month,55.0,https://verpex.com/vps-hosting#Plans,https://verpex.com/vps-hosting,jsonld:offer,2026-09-26T18:15:43Z
+GreenGeeks,4 GB VPS,69.95,USD,month,69.95,https://www.greengeeks.com/vps-hosting/#4gb,https://www.greengeeks.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
+GreenGeeks,8 GB VPS,129.95,USD,month,129.95,https://www.greengeeks.com/vps-hosting/#8gb,https://www.greengeeks.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
+GreenGeeks,16 GB VPS,179.95,USD,month,179.95,https://www.greengeeks.com/vps-hosting/#16gb,https://www.greengeeks.com/vps-hosting,jsonld:product,2026-09-26T18:15:43Z
