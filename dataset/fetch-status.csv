@@ -8,9 +8,9 @@ ScalaHosting,https://www.scalahosting.com/,200,ok,regex,1,
 GreenGeeks,https://www.greengeeks.com/vps-hosting,200,ok,jsonld:product,3,
 DreamHost,https://www.dreamhost.com/hosting/vps/,200,ok,regex,1,
 InMotion Hosting,https://www.inmotionhosting.com/vps-hosting,200,ok,jsonld:offer,5,
-UltaHost,https://ultahost.com/vps-hosting,403,http_error,,0,HTTP 403
+UltaHost,https://ultahost.com/vps-hosting,200,ok,jsonld:product,1,
 Cloudzy,https://cloudzy.com/vps-hosting/,200,ok,regex,2,
 SSD Nodes,https://www.ssdnodes.com/pricing/,200,ok,jsonld:product,1,
 BuyVM,https://buyvm.net/kvm-dedicated-server-slices/,200,ok,regex,2,
-TransIP,https://www.transip.eu/vps/,200,no_price,,0,页面没给出可提取的公开价格（多为 JS 渲染），按规则不写 price 也不编
+TransIP,https://www.transip.eu/vps/,200,ok,regex,1,
 Verpex,https://verpex.com/vps-hosting,200,ok,jsonld:offer,4,
