@@ -3,7 +3,7 @@
 Published monthly and annual prices for virtual private server (VPS) plans, read directly
 from the public pricing pages of 15 hosting providers.
 
-Snapshot date: **2026-10-14** (UTC `2026-10-14T06:32:03Z`)
+Snapshot date: **2026-10-14** (UTC `2026-10-14T12:32:48Z`)
 Offers: **29** across **15** providers
 
 ## Files
