@@ -11,6 +11,6 @@ InMotion Hosting,https://www.inmotionhosting.com/vps-hosting,200,ok,jsonld:offer
 UltaHost,https://ultahost.com/vps-hosting,200,ok,jsonld:product,1,
 Cloudzy,https://cloudzy.com/vps-hosting/,200,ok,regex,2,
 SSD Nodes,https://www.ssdnodes.com/pricing/,200,ok,jsonld:product,1,
-BuyVM,https://buyvm.net/kvm-dedicated-server-slices/,,error,,0,RuntimeError: 抓取失败 https://buyvm.net/kvm-dedicated-server-slices/: <urlopen error [Errno 111] Connection refused>
+BuyVM,https://buyvm.net/kvm-dedicated-server-slices/,200,ok,regex,2,
 TransIP,https://www.transip.eu/vps/,200,ok,regex,1,
 Verpex,https://verpex.com/vps-hosting,200,ok,jsonld:offer,4,
